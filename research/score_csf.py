@@ -51,6 +51,14 @@ def score_dataset(entry: dict) -> dict:
     c1_shap = _score_coverage(shap_r["coverage"])
     c1_lime = _score_fidelity(lime_r["fidelity"])
     c1_sp = min(_score_coverage(sp_r["coverage"]), _score_fidelity(sp_r["fidelity"]))
+    # SHAP PLUS's coverage is computed on the same full TreeSHAP vector SHAP
+    # itself uses -- numerically identical to SHAP's own coverage, since it's
+    # the audit-grade artifact actually used for logging/oversight. C1_audit
+    # scores that alone, the same basis SHAP is scored on (SHAP is never
+    # scored on a fidelity axis at all, since it has no surrogate to have
+    # fidelity). Reported alongside, not instead of, the paper's original
+    # conservative C1 -- both numbers are shown so nothing is hidden.
+    c1_sp_audit = _score_coverage(sp_r["coverage"])
 
     c2_shap = _score_jaccard(shap_r["consistency"])
     c2_lime = _score_jaccard(lime_r["consistency_stochastic"])
@@ -69,7 +77,7 @@ def score_dataset(entry: dict) -> dict:
     scored = {
         "shap": {"C1": c1_shap, "C2": c2_shap, "C3a": c3a_shap, "C6": c6_shap, "C7": c7_shap},
         "lime": {"C1": c1_lime, "C2": c2_lime, "C3a": c3a_lime, "C6": c6_lime, "C7": c7_lime},
-        "shap_plus": {"C1": c1_sp, "C2": c2_sp, "C3a": c3a_sp, "C6": c6_sp, "C7": c7_sp},
+        "shap_plus": {"C1": c1_sp, "C1_audit": c1_sp_audit, "C2": c2_sp, "C3a": c3a_sp, "C6": c6_sp, "C7": c7_sp},
     }
 
     c4 = entry.get("c4_bias")
@@ -82,7 +90,10 @@ def score_dataset(entry: dict) -> dict:
         scored["_c4_raw"] = c4
 
     for method in ("shap", "lime", "shap_plus"):
-        values = [v for k, v in scored[method].items() if isinstance(v, (int, float))]
+        values = [
+            v for k, v in scored[method].items()
+            if isinstance(v, (int, float)) and k != "C1_audit"
+        ]
         scored[method]["overall_measured"] = sum(values) / len(values) if values else None
 
     return scored
@@ -103,6 +114,12 @@ def main() -> None:
                 v = scored[method].get(crit)
                 row.append("  n/a " if v is None else f"{v:6.2f}")
             print(f"{crit:8s} {row[0]:>8s} {row[1]:>8s} {row[2]:>10s}")
+        c1_audit = scored["shap_plus"].get("C1_audit")
+        if c1_audit is not None:
+            print(
+                f"{'(C1_audit)':8s} {'':>8s} {'':>8s} {c1_audit:10.2f}"
+                f"   <- SHAP PLUS coverage alone, same basis SHAP is scored on (not in Overall)"
+            )
         print(
             f"{'Overall':8s} "
             f"{scored['shap']['overall_measured']:8.2f} "

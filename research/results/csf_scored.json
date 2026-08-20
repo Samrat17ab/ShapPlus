@@ -19,13 +19,14 @@
       "overall_measured": 2.25
     },
     "shap_plus": {
-      "C1": 2.0,
+      "C1": 3.0,
+      "C1_audit": 3.0,
       "C2": 5.0,
-      "C3a": 3.0,
+      "C3a": 4.0,
       "C6": 5.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.166666666666667
+      "overall_measured": 4.5
     },
     "_c4_raw": {
       "shap_gap": 0.23730741381832576,
@@ -38,28 +39,28 @@
         "1.0": 56
       },
       "shap_presence_rate": 1.0,
-      "lime_gap": 0.03738183840898983,
+      "lime_gap": 0.03864594460488248,
       "lime_group_means": {
-        "0.0": -0.019359158950220876,
-        "1.0": 0.018022679458768957
+        "0.0": -0.019198131217841988,
+        "1.0": 0.019447813387040495
       },
       "lime_group_n": {
-        "0.0": 37,
-        "1.0": 17
+        "0.0": 44,
+        "1.0": 27
       },
-      "lime_presence_rate": 0.36,
+      "lime_presence_rate": 0.47333333333333333,
       "shap_plus_full_gap": 0.23730741381832576,
       "shap_plus_full_group_means": {
         "0.0": -0.08460374542507322,
         "1.0": 0.15270366839325253
       },
       "shap_plus_full_presence_rate": 1.0,
-      "shap_plus_visible_gap": 0.2816611814363839,
+      "shap_plus_visible_gap": 0.31508200087522387,
       "shap_plus_visible_group_means": {
-        "0.0": -0.10313615035741164,
-        "1.0": 0.17852503107897227
+        "0.0": -0.10469657360364354,
+        "1.0": 0.21038542727158033
       },
-      "shap_plus_visible_presence_rate": 0.5333333333333333
+      "shap_plus_visible_presence_rate": 0.43333333333333335
     }
   },
   "hmeq": {
@@ -80,12 +81,13 @@
       "overall_measured": 2.3
     },
     "shap_plus": {
-      "C1": 1.5,
+      "C1": 3.0,
+      "C1_audit": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
       "C6": 5.0,
       "C7": 5.0,
-      "overall_measured": 4.1
+      "overall_measured": 4.4
     }
   },
   "hmda_vt": {
@@ -108,13 +110,14 @@
       "overall_measured": 2.5833333333333335
     },
     "shap_plus": {
-      "C1": 1.5,
+      "C1": 4.0,
+      "C1_audit": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
       "C6": 5.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.25
+      "overall_measured": 4.666666666666667
     },
     "_c4_raw": {
       "shap_gap": 0.17022087039454642,
@@ -131,20 +134,20 @@
         "3.0": 22
       },
       "shap_presence_rate": 1.0,
-      "lime_gap": 0.06521467909384036,
+      "lime_gap": 0.05662817619846494,
       "lime_group_means": {
-        "0.0": 0.03411595569034649,
-        "1.0": -0.031098723403493872,
-        "2.0": 0.008987535716015824,
-        "3.0": 0.008671250441875547
+        "0.0": 0.028654475722984917,
+        "1.0": -0.02797370047548002,
+        "2.0": 0.0011553126228277426,
+        "3.0": 0.025840184774726344
       },
       "lime_group_n": {
         "0.0": 10,
-        "1.0": 24,
-        "2.0": 16,
-        "3.0": 7
+        "1.0": 19,
+        "2.0": 13,
+        "3.0": 9
       },
-      "lime_presence_rate": 0.38,
+      "lime_presence_rate": 0.34,
       "shap_plus_full_gap": 0.17022087039454642,
       "shap_plus_full_group_means": {
         "0.0": 0.06810752061003536,
@@ -153,9 +156,13 @@
         "3.0": -0.023709310143427097
       },
       "shap_plus_full_presence_rate": 1.0,
-      "shap_plus_visible_gap": null,
-      "shap_plus_visible_group_means": {},
-      "shap_plus_visible_presence_rate": 0.0
+      "shap_plus_visible_gap": 0.44406701439335466,
+      "shap_plus_visible_group_means": {
+        "1.0": -0.1358178276011392,
+        "2.0": 0.30824918679221547,
+        "3.0": -0.061810631245599844
+      },
+      "shap_plus_visible_presence_rate": 0.02
     }
   }
 }

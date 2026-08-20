@@ -222,7 +222,6 @@ def build_shap_plus(booster, X_train, feature_names, categorical_columns, protec
         max_rule_terms=5,
         neighborhood_size=512,
         fidelity_threshold=0.75,
-        ridge_alpha=1e-2,
         immutable_features=IMMUTABLE.get(dataset_key, set()),
         actionable_features=ACTIONABLE.get(dataset_key, set()),
         model_version=f"{dataset_key}-lightgbm-v1",

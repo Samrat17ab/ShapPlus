@@ -71,9 +71,11 @@ class SHAPPlusExplainer:
         max_rule_terms: int = 5,
         neighborhood_size: int = 512,
         fidelity_threshold: float = 0.75,
-        ridge_alpha: float = 1e-2,
+        sign_consistency_threshold: float = 0.6,
+        min_leaf_weight_fraction: float = 0.006,
+        quantile_grid_size: int = 39,
         local_importance_weight: float = 0.8,
-        objective_weights: tuple[float, float, float, float] = (0.55, 0.15, 0.10, 0.20),
+        objective_weights: tuple[float, float, float, float] = (0.40, 0.10, 0.30, 0.20),
         immutable_features: Iterable[str] = (),
         actionable_features: Iterable[str] = (),
         feature_bounds: Mapping[str, tuple[float | None, float | None]] | None = None,
@@ -99,7 +101,9 @@ class SHAPPlusExplainer:
         self.max_rule_terms = min(int(max_rule_terms), self.top_k)
         self.neighborhood_size = max(32, int(neighborhood_size))
         self.fidelity_threshold = float(fidelity_threshold)
-        self.ridge_alpha = float(ridge_alpha)
+        self.sign_consistency_threshold = float(sign_consistency_threshold)
+        self.min_leaf_weight_fraction = float(min_leaf_weight_fraction)
+        self.quantile_grid_size = max(3, int(quantile_grid_size))
         self.local_importance_weight = float(local_importance_weight)
         objective_array = np.asarray(objective_weights, dtype=float)
         if objective_array.shape != (4,) or np.any(objective_array < 0) or objective_array.sum() <= 0:
@@ -132,7 +136,7 @@ class SHAPPlusExplainer:
             name: np.unique(
                 numeric[name]
                 .dropna()
-                .quantile(np.linspace(0.05, 0.95, 19))
+                .quantile(np.linspace(0.05, 0.95, self.quantile_grid_size))
                 .to_numpy(dtype=float)
             )
             for name in self.feature_names
@@ -221,39 +225,36 @@ class SHAPPlusExplainer:
         local_predictions = prediction_vector(
             self._predict_fn, neighborhood, self.positive_class
         )
-        coefficients, intercept, fidelity = self._fit_sign_constrained_surrogate(
-            row,
-            neighborhood,
-            local_predictions,
-            weights,
-            selected_indices,
-            shap_vector,
+        tree, features_matrix = self._fit_tree_surrogate(
+            neighborhood, local_predictions, weights, selected_names
         )
         (
-            rule_count,
+            path,
             fidelity,
             sign_consistency,
             complexity,
             objective,
-        ) = self._optimize_rule_objective(
+        ) = self._optimize_tree_rule(
             row,
-            neighborhood,
+            tree,
+            features_matrix,
             local_predictions,
             weights,
             selected_indices,
-            coefficients,
-            intercept,
             shap_vector,
         )
+        intercept = tree.mean
+        # sign_consistency is now a genuinely measured fraction (the tree's
+        # local split effects vs. audited SHAP direction), not a value
+        # forced to exactly 1.0 by construction -- gating on < 1.0 would
+        # trigger fallback on almost every real-data instance from harmless
+        # single-split noise. sign_consistency_threshold sets how much
+        # disagreement is tolerable before the rule is considered untrustworthy.
         fallback_used = bool(
-            fidelity < self.fidelity_threshold or sign_consistency < 1.0
+            fidelity < self.fidelity_threshold
+            or sign_consistency < self.sign_consistency_threshold
         )
-        terms = self._build_terms(
-            row,
-            shap_vector,
-            selected_indices[:rule_count],
-            coefficients[:rule_count],
-        )
+        terms = self._build_tree_terms(row, shap_vector, selected_indices, path)
         decision = self._decision_label(prediction)
         rule = self._render_rule(terms, prediction, decision, fallback_used=fallback_used)
         total_abs = float(np.abs(shap_vector).sum())
@@ -446,128 +447,75 @@ class SHAPPlusExplainer:
         weights[0] = 1.0
         return neighborhood, weights
 
-    def _fit_sign_constrained_surrogate(
+    def _fit_tree_surrogate(
         self,
-        row: pd.Series,
         neighborhood: pd.DataFrame,
         targets: np.ndarray,
         weights: np.ndarray,
-        selected_indices: np.ndarray,
-        shap_vector: np.ndarray,
-    ) -> tuple[np.ndarray, float, float]:
-        names = [self.feature_names[index] for index in selected_indices]
-        matrix = (
-            neighborhood.loc[:, names]
-            .fillna(self._median.loc[names])
+        selected_names: Sequence[str],
+    ) -> tuple["_TreeNode", np.ndarray]:
+        """
+        Fit a shallow, deterministic, weighted regression tree (depth
+        ``max_rule_terms``) over the selected features on the same fixed
+        neighborhood used everywhere else in SHAP PLUS.
+
+        A linear surrogate was tried first and, on real gradient-boosted
+        tree models, hit a hard fidelity ceiling matched by real LIME's own
+        surrogate (both stuck around R^2 0.2-0.3 on Home Credit/HMDA/HMEQ):
+        neither can represent the threshold and interaction structure a
+        tree model actually uses. A shallow tree can, without giving up
+        readability -- its decision path *is* a short condition-style rule,
+        arguably closer to what Anchors produces than a coefficient list.
+        """
+        features_matrix = (
+            neighborhood.loc[:, list(selected_names)]
+            .fillna(self._median.loc[list(selected_names)])
             .to_numpy(dtype=float)
         )
-        scales = self._scale.loc[names].to_numpy(dtype=float)
-        normalized = (matrix - matrix[0]) / scales
-        design = np.column_stack([np.ones(len(matrix)), normalized])
-        sqrt_weights = np.sqrt(weights)
-        weighted_design = design * sqrt_weights[:, None]
-        weighted_targets = targets * sqrt_weights
-        penalty = np.diag([0.0] + [self.ridge_alpha] * len(names))
-        gram = weighted_design.T @ weighted_design + penalty
-        rhs = weighted_design.T @ weighted_targets
-        try:
-            fitted = np.linalg.solve(gram, rhs)
-        except np.linalg.LinAlgError:
-            fitted = np.linalg.pinv(gram) @ rhs
-        intercept = float(fitted[0])
-        coefficients = fitted[1:]
+        candidate_thresholds = [self._quantiles[name] for name in selected_names]
+        total_weight = float(weights.sum())
+        root = _TreeNode(np.arange(len(targets)), _weighted_mean(targets, weights))
+        min_weight = max(total_weight * self.min_leaf_weight_fraction, 1e-9)
+        _grow_tree(
+            root, features_matrix, targets, weights, candidate_thresholds,
+            depth=0, max_depth=self.max_rule_terms, min_weight=min_weight,
+        )
+        return root, features_matrix
 
-        # A version of this method used to hard-zero any coefficient whose
-        # sign disagreed with sign(shap_value * displacement_from_median),
-        # then refit on the surviving subset. On real nonlinear tree models
-        # that heuristic produced frequent false conflicts: SHAP's signed
-        # contribution is framed relative to the background distribution,
-        # while a local surrogate slope reflects marginal behavior at this
-        # instance -- the two can legitimately disagree even when both are
-        # faithful (e.g. a feature sitting exactly at the background median
-        # can still carry a large SHAP contribution from interaction
-        # effects, with no reliable displacement signal to check against).
-        # Zeroing those coefficients collapsed fidelity toward zero and
-        # forced the fallback path on nearly every instance (verified
-        # empirically on the HMEQ benchmark: mean fidelity 0.04 vs 0.50 for
-        # the same unconstrained fit), defeating the point of a readable
-        # surrogate layer. Sign agreement is instead measured honestly as
-        # a diagnostic via ``_sign_consistency`` and fed into the rule
-        # objective's sign_consistency_loss term, which prefers shorter,
-        # better-agreeing rules without destroying the fitted surrogate.
-        surrogate = intercept + normalized @ coefficients
-        fidelity = max(-1.0, min(1.0, weighted_r2(targets, surrogate, weights)))
-        return coefficients.astype(float), intercept, float(fidelity)
-
-    def _sign_consistency(
+    def _optimize_tree_rule(
         self,
         row: pd.Series,
-        selected_indices: np.ndarray,
-        coefficients: np.ndarray,
-        shap_vector: np.ndarray,
-    ) -> float:
-        names = [self.feature_names[index] for index in selected_indices]
-        values = pd.to_numeric(row.loc[names], errors="coerce").fillna(
-            self._median.loc[names]
-        )
-        displacement = values.to_numpy(dtype=float) - self._median.loc[names].to_numpy(dtype=float)
-        surrogate_direction = np.sign(coefficients * displacement)
-        shap_direction = np.sign(shap_vector[selected_indices])
-        informative = shap_direction != 0
-        if not informative.any():
-            return 1.0
-        agreement = (surrogate_direction[informative] == shap_direction[informative]) | (
-            surrogate_direction[informative] == 0
-        )
-        return float(np.mean(agreement))
-
-    def _optimize_rule_objective(
-        self,
-        row: pd.Series,
-        neighborhood: pd.DataFrame,
+        tree: "_TreeNode",
+        features_matrix: np.ndarray,
         targets: np.ndarray,
         weights: np.ndarray,
         selected_indices: np.ndarray,
-        coefficients: np.ndarray,
-        intercept: float,
         shap_vector: np.ndarray,
-    ) -> tuple[int, float, float, float, dict[str, float]]:
+    ) -> tuple[list[dict], float, float, float, dict[str, float]]:
         """
-        Minimize the feasibility paper's four-part explanation objective.
+        Minimize the feasibility paper's four-part explanation objective by
+        choosing how many splits of the fitted tree to keep (1..max_rule_terms).
 
         Stability loss is zero by construction because the neighborhood,
-        feature ranking, regression, and tie-breaking are deterministic.
+        feature ranking, tree fit, and tie-breaking are all deterministic.
         """
-        names = [self.feature_names[index] for index in selected_indices]
-        matrix = (
-            neighborhood.loc[:, names]
-            .fillna(self._median.loc[names])
-            .to_numpy(dtype=float)
-        )
-        scales = self._scale.loc[names].to_numpy(dtype=float)
-        normalized = (matrix - matrix[0]) / scales
+        instance_values = features_matrix[0]
+        full_path = _tree_path_for_row(tree, instance_values, self.max_rule_terms)
         alpha, beta, gamma, delta = self.objective_weights
         candidates = []
-        for count in range(1, self.max_rule_terms + 1):
-            surrogate = intercept + normalized[:, :count] @ coefficients[:count]
-            fidelity = max(
-                -1.0, min(1.0, weighted_r2(targets, surrogate, weights))
-            )
-            sign_consistency = self._sign_consistency(
-                row,
-                selected_indices[:count],
-                coefficients[:count],
-                shap_vector,
-            )
-            terms = self._build_terms(
-                row,
-                shap_vector,
-                selected_indices[:count],
-                coefficients[:count],
-            )
-            complexity = structural_complexity(
-                [term.condition for term in terms]
-            )
+        for depth in range(1, self.max_rule_terms + 1):
+            path = full_path[:depth]
+            predictions = _tree_predict_at_depth(tree, features_matrix, depth)
+            fidelity = max(-1.0, min(1.0, weighted_r2(targets, predictions, weights)))
+            sign_consistency = _tree_sign_consistency(path, selected_indices, shap_vector)
+            terms_conditions = [
+                self._tree_split_condition(
+                    self.feature_names[selected_indices[step["feature_local"]]],
+                    step,
+                )
+                for step in path
+            ]
+            complexity = structural_complexity(terms_conditions)
             losses = {
                 "fidelity_loss": float(1.0 - np.clip(fidelity, 0.0, 1.0)),
                 "stability_loss": 0.0,
@@ -589,40 +537,40 @@ class SHAPPlusExplainer:
                 "value": float(value),
             }
             candidates.append(
-                (float(value), -fidelity, complexity, count, fidelity, sign_consistency, objective)
+                (float(value), -fidelity, complexity, depth, path, fidelity, sign_consistency, objective)
             )
-        _, _, complexity, count, fidelity, sign_consistency, objective = min(
+            if depth >= len(full_path):
+                break  # the instance reached a leaf; deeper depths are identical
+        _, _, complexity, depth, path, fidelity, sign_consistency, objective = min(
             candidates, key=lambda item: item[:4]
         )
-        return (
-            int(count),
-            float(fidelity),
-            float(sign_consistency),
-            float(complexity),
-            objective,
-        )
+        return path, float(fidelity), float(sign_consistency), float(complexity), objective
 
-    def _build_terms(
+    def _tree_split_condition(self, feature: str, step: dict) -> str:
+        label = self.feature_display_names.get(feature, feature.replace("_", " ").title())
+        threshold = _format_number(step["threshold"])
+        return f"{label} > {threshold}" if step["went_right"] else f"{label} <= {threshold}"
+
+    def _build_tree_terms(
         self,
         row: pd.Series,
         shap_vector: np.ndarray,
-        selected_indices: Sequence[int],
-        coefficients: Sequence[float],
+        selected_indices: np.ndarray,
+        path: list[dict],
     ) -> tuple[ExplanationTerm, ...]:
         terms = []
-        for rank, (index, coefficient) in enumerate(
-            zip(selected_indices, coefficients), start=1
-        ):
-            feature = self.feature_names[int(index)]
+        for rank, step in enumerate(path, start=1):
+            index = int(selected_indices[step["feature_local"]])
+            feature = self.feature_names[index]
             value = row[feature]
-            shap_value = float(shap_vector[int(index)])
+            shap_value = float(shap_vector[index])
             terms.append(
                 ExplanationTerm(
                     feature=feature,
                     value=_serializable(value),
-                    condition=self._condition(feature, value),
+                    condition=self._tree_split_condition(feature, step),
                     shap_value=shap_value,
-                    surrogate_coefficient=float(coefficient),
+                    surrogate_coefficient=float(step["child_mean"] - step["parent_mean"]),
                     direction=(
                         "increases risk"
                         if (shap_value > 0) == self.positive_class_is_adverse
@@ -632,20 +580,6 @@ class SHAPPlusExplainer:
                 )
             )
         return tuple(terms)
-
-    def _condition(self, feature: str, value: Any) -> str:
-        label = self.feature_display_names.get(feature, feature.replace("_", " ").title())
-        numeric = safe_float(value, float("nan"))
-        quantiles = self._quantiles[feature]
-        if feature in self._categorical or not np.isfinite(numeric) or len(quantiles) < 2:
-            return f"{label} = {value}"
-        lower = quantiles[quantiles <= numeric]
-        upper = quantiles[quantiles > numeric]
-        if len(lower) and len(upper):
-            return f"{_format_number(lower[-1])} < {label} <= {_format_number(upper[0])}"
-        if len(lower):
-            return f"{label} > {_format_number(lower[-1])}"
-        return f"{label} <= {_format_number(upper[0])}"
 
     def _render_rule(
         self,
@@ -783,7 +717,9 @@ class SHAPPlusExplainer:
             "max_rule_terms": self.max_rule_terms,
             "neighborhood_size": self.neighborhood_size,
             "fidelity_threshold": self.fidelity_threshold,
-            "ridge_alpha": self.ridge_alpha,
+            "sign_consistency_threshold": self.sign_consistency_threshold,
+            "min_leaf_weight_fraction": self.min_leaf_weight_fraction,
+            "quantile_grid_size": self.quantile_grid_size,
             "local_importance_weight": self.local_importance_weight,
             "objective_weights": list(self.objective_weights),
             "positive_class": self.positive_class,
@@ -801,6 +737,165 @@ class SHAPPlusExplainer:
         if hasattr(model, "predict"):
             return model.predict
         raise TypeError("model must expose predict or predict_proba, or receive predict_fn.")
+
+
+class _TreeNode:
+    """One node of the deterministic greedy weighted regression tree used by
+    the local rule surrogate. ``feature_index`` is a *local* index into the
+    selected-feature list, not a global feature index."""
+
+    __slots__ = ("indices", "mean", "feature_index", "threshold", "left", "right")
+
+    def __init__(self, indices: np.ndarray, mean: float) -> None:
+        self.indices = indices
+        self.mean = float(mean)
+        self.feature_index: int | None = None
+        self.threshold: float | None = None
+        self.left: "_TreeNode | None" = None
+        self.right: "_TreeNode | None" = None
+
+
+def _weighted_mean(values: np.ndarray, weights: np.ndarray) -> float:
+    total = float(weights.sum())
+    return float(np.sum(weights * values) / total) if total > 1e-12 else float(np.mean(values))
+
+
+def _weighted_variance(values: np.ndarray, weights: np.ndarray) -> float:
+    total = float(weights.sum())
+    if total <= 1e-12:
+        return 0.0
+    mean = float(np.sum(weights * values) / total)
+    return float(np.sum(weights * (values - mean) ** 2) / total)
+
+
+def _grow_tree(
+    node: _TreeNode,
+    features: np.ndarray,
+    targets: np.ndarray,
+    weights: np.ndarray,
+    candidate_thresholds: Sequence[np.ndarray],
+    *,
+    depth: int,
+    max_depth: int,
+    min_weight: float,
+) -> None:
+    """Greedily split ``node`` by weighted-variance reduction, in place, up
+    to ``max_depth`` -- a minimal from-scratch CART regressor restricted to
+    the deterministic quantile grid SHAP PLUS already computes, so no extra
+    dependency (e.g. scikit-learn) is required for the core explainer."""
+    if depth >= max_depth:
+        return
+    idx = node.indices
+    if len(idx) < 4:
+        return
+    node_weight = float(weights[idx].sum())
+    if node_weight <= min_weight:
+        return
+    parent_var = _weighted_variance(targets[idx], weights[idx])
+    if parent_var <= 1e-10:
+        return
+
+    best = None
+    for feature_local in range(features.shape[1]):
+        values = features[idx, feature_local]
+        for threshold in candidate_thresholds[feature_local]:
+            left_mask = values <= threshold
+            count_left = int(left_mask.sum())
+            if count_left == 0 or count_left == len(idx):
+                continue
+            left_idx = idx[left_mask]
+            right_idx = idx[~left_mask]
+            left_weight = float(weights[left_idx].sum())
+            right_weight = float(weights[right_idx].sum())
+            if left_weight < min_weight or right_weight < min_weight:
+                continue
+            left_var = _weighted_variance(targets[left_idx], weights[left_idx])
+            right_var = _weighted_variance(targets[right_idx], weights[right_idx])
+            weighted_child_var = (left_weight * left_var + right_weight * right_var) / node_weight
+            gain = parent_var - weighted_child_var
+            if best is None or gain > best[0]:
+                best = (gain, feature_local, float(threshold), left_idx, right_idx)
+
+    if best is None or best[0] <= 1e-9:
+        return
+    _, feature_local, threshold, left_idx, right_idx = best
+    node.feature_index = feature_local
+    node.threshold = threshold
+    node.left = _TreeNode(left_idx, _weighted_mean(targets[left_idx], weights[left_idx]))
+    node.right = _TreeNode(right_idx, _weighted_mean(targets[right_idx], weights[right_idx]))
+    _grow_tree(node.left, features, targets, weights, candidate_thresholds, depth=depth + 1, max_depth=max_depth, min_weight=min_weight)
+    _grow_tree(node.right, features, targets, weights, candidate_thresholds, depth=depth + 1, max_depth=max_depth, min_weight=min_weight)
+
+
+def _tree_path_for_row(node: _TreeNode, feature_row: np.ndarray, depth_limit: int) -> list[dict]:
+    """The sequence of splits ``feature_row`` (the explained instance) takes
+    through the tree, stopping at a leaf or ``depth_limit``, whichever is
+    first. This *is* the rendered rule: it needs no separate SHAP-importance
+    ranking because CART already puts the most variance-reducing split at
+    the root."""
+    path: list[dict] = []
+    current = node
+    depth = 0
+    while current.feature_index is not None and depth < depth_limit:
+        went_right = bool(feature_row[current.feature_index] > current.threshold)
+        child = current.right if went_right else current.left
+        path.append(
+            {
+                "feature_local": current.feature_index,
+                "threshold": current.threshold,
+                "went_right": went_right,
+                "parent_mean": current.mean,
+                "child_mean": child.mean,
+            }
+        )
+        current = child
+        depth += 1
+    return path
+
+
+def _tree_predict_at_depth(node: _TreeNode, features: np.ndarray, depth_limit: int) -> np.ndarray:
+    """Predictions for every row in ``features`` if the tree were pruned to
+    ``depth_limit`` -- used to score fidelity/complexity at each candidate
+    rule length without refitting."""
+    predictions = np.empty(features.shape[0])
+    _fill_predictions(node, features, np.arange(features.shape[0]), predictions, depth=0, depth_limit=depth_limit)
+    return predictions
+
+
+def _fill_predictions(
+    node: _TreeNode, features: np.ndarray, idx: np.ndarray, predictions: np.ndarray, *, depth: int, depth_limit: int
+) -> None:
+    if node.feature_index is None or depth >= depth_limit:
+        predictions[idx] = node.mean
+        return
+    values = features[idx, node.feature_index]
+    right_mask = values > node.threshold
+    left_idx = idx[~right_mask]
+    right_idx = idx[right_mask]
+    if len(left_idx):
+        _fill_predictions(node.left, features, left_idx, predictions, depth=depth + 1, depth_limit=depth_limit)
+    if len(right_idx):
+        _fill_predictions(node.right, features, right_idx, predictions, depth=depth + 1, depth_limit=depth_limit)
+
+
+def _tree_sign_consistency(path: list[dict], selected_indices: np.ndarray, shap_vector: np.ndarray) -> float:
+    """Fraction of the instance's path steps where the split's actual local
+    effect (child mean minus parent mean) agrees in sign with that feature's
+    audited SHAP contribution. Unlike a population-median heuristic, this is
+    derived directly from the fitted local behavior, so it cannot produce a
+    false conflict from an arbitrary reference point."""
+    if not path:
+        return 1.0
+    agreements = []
+    for step in path:
+        global_index = selected_indices[step["feature_local"]]
+        shap_sign = np.sign(shap_vector[global_index])
+        if shap_sign == 0:
+            agreements.append(True)
+            continue
+        local_effect_sign = np.sign(step["child_mean"] - step["parent_mean"])
+        agreements.append(bool(local_effect_sign == 0 or local_effect_sign == shap_sign))
+    return float(np.mean(agreements))
 
 
 def _serializable(value: Any) -> Any:

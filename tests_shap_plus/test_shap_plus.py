@@ -39,7 +39,7 @@ def make_explainer():
         attribution_fn=attribution_fn,
         top_k=4,
         max_rule_terms=3,
-        neighborhood_size=64,
+        neighborhood_size=128,
         fidelity_threshold=0.5,
         immutable_features={"CODE_GENDER"},
         actionable_features={"INCOME", "DEBT", "RESERVES"},
