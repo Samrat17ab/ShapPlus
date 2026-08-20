@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shap-plus"
+version = "0.1.0"
+description = "SHAP-grounded, deterministic and human-readable hybrid explanations for high-risk mortgage and credit models."
+readme = "SHAP_PLUS_README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Samrat Lamsal" }]
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "shap>=0.45",
+]
+
+[project.optional-dependencies]
+lightgbm = ["lightgbm>=4.0"]
+research = [
+  "lightgbm>=4.0",
+  "scikit-learn>=1.3",
+  "scipy>=1.10",
+  "matplotlib>=3.7",
+]
+test = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+include = ["shap_plus*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests_shap_plus"]
+addopts = "-q"

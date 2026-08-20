@@ -1,0 +1,57 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+tmp/
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
+/dist/
+/.wrangler/
+/outputs/
+/work/
+/.vs/
+/.venv-shap-plus/
+__pycache__/
+*.py[cod]
+*.egg-info/
+/.pytest_cache/
+/pytest-cache-files-*/
+
+# research artifacts: trained models + pickled data splits are regenerable
+# from prepare_data.py / train_models.py and exceed GitHub's file size limit
+# (home_credit's X_train.pkl alone is ~180MB).
+/research/artifacts/
+/research/data/application_train.csv
+/research/data/application_test.csv

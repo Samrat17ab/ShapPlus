@@ -1,0 +1,25 @@
+
+=== home_credit ===
+  SHAP ... coverage=0.755 consistency=1.000 (0.6s)
+  LIME (stochastic) ... fidelity=0.240 consistency=0.325 (56.9s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (21.8s)
+  SHAP PLUS ... coverage=0.746 fidelity=0.605 consistency=1.000 fallback_rate=0.833 (15.4s)
+  C4 bias gap (CODE_GENDER): SHAP=0.23730741381832576 LIME=0.03738183840898983 SHAP_PLUS(full)=0.23730741381832576 SHAP_PLUS(visible)=0.2816611814363839
+  dataset total: 94.8s
+
+=== hmeq ===
+  SHAP ... coverage=0.977 consistency=1.000 (2.2s)
+  LIME (stochastic) ... fidelity=0.221 consistency=0.793 (8.1s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (1.8s)
+  SHAP PLUS ... coverage=0.973 fidelity=0.215 consistency=1.000 fallback_rate=0.993 (13.2s)
+  dataset total: 25.3s
+
+=== hmda_vt ===
+  SHAP ... coverage=0.975 consistency=1.000 (0.7s)
+  LIME (stochastic) ... fidelity=0.257 consistency=0.622 (5.4s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (1.5s)
+  SHAP PLUS ... coverage=0.972 fidelity=0.402 consistency=1.000 fallback_rate=0.953 (11.5s)
+  C4 bias gap (derived_sex): SHAP=0.17022087039454642 LIME=0.06521467909384036 SHAP_PLUS(full)=0.17022087039454642 SHAP_PLUS(visible)=None
+  dataset total: 19.1s
+
+Saved raw results to C:\Users\samla\Documents\Samrat Lamsal\research\results\benchmark_raw.json
