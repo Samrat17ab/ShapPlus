@@ -97,18 +97,65 @@ with overwhelming statistical significance and large paired effect sizes
 (Cohen's d 2.1-4.3 for fidelity, -5.8 to -6.8 for complexity) on every
 dataset, including the one the tuning process never saw.
 
-**The honest limit: SHAP PLUS vs SHAP is a genuine toss-up, not a robust
-win.** A Dirichlet(1) Monte Carlo sweep over 5,000 random CSF criterion
-weightings (mirroring the conference paper's own robustness check) finds
-SHAP PLUS ties-or-beats plain SHAP's overall score in only ~50-52% of
-weightings on every dataset -- essentially a coin flip, not the >99%
-robustness the conference paper found for SHAP over LIME. Report this as
-what it is: SHAP PLUS achieves genuine parity with SHAP under equal
-weighting (not a decisive win), while adding a human-readable rule layer
-SHAP structurally cannot provide at all. Claiming SHAP PLUS "beats SHAP" in
-a journal submission would overstate this finding; claiming it "matches
-SHAP's regulatory profile while adding a validated readability layer" would
-not.
+**The honest limit, corrected: SHAP objectively beats SHAP PLUS on the
+measured criteria -- robustly, not marginally.** An earlier version of this
+section reported SHAP PLUS "tying SHAP" and later "a ~50% toss-up" against
+SHAP. Both readings were wrong, and both were wrong for the same reason: C6
+(Human Oversight) was scored from a static checklist keyed only by method
+*name* --
+
+```python
+C6_CHECKLIST = {
+    "shap":      {"direction": True, "magnitude": True, "actionable": False, "traceability": True},   # 3/4
+    "lime":      {"direction": True, "magnitude": True, "actionable": True,  "traceability": False},  # 3/4
+    "shap_plus": {"direction": True, "magnitude": True, "actionable": True,  "traceability": True},   # 4/4
+}
+```
+
+-- which gives SHAP PLUS exactly +1 over SHAP on *every* dataset, regardless
+of any data, because it never looks at any data. That constant happened to
+exactly cancel SHAP's real, measured lead on C1 and C3a on every single
+dataset tested, manufacturing an apparent tie. This was caught by direct
+user challenge ("shap and shap plus overall marks is also same at all
+places which is kinda sus"), not discovered independently -- worth stating
+plainly rather than glossing over.
+
+With C6 excluded, computing `overall_quantitative` (C1, C2, C3a, C4, C7 --
+all objectively measured from real data, none of them author-assessed):
+**SHAP outperforms SHAP PLUS on this figure on every dataset tested**
+(4.40 vs 4.20 on Home Credit, 4.75 vs 4.50 on HMEQ, 4.80 vs 4.60 on both
+HMDA datasets). A Dirichlet(1) Monte Carlo sweep over 5,000 random
+weightings of just the quantitative criteria finds SHAP PLUS ties-or-beats
+SHAP in **0.0%** of weightings on every dataset -- SHAP's advantage on the
+measured criteria is robust, not marginal, mirroring in the opposite
+direction the same kind of >99%-robust asymmetry the conference paper found
+for SHAP over LIME.
+
+C6 is still reported (see `research/results/final_csf_scored.json`) and
+still included in a second, clearly-labeled `overall_with_checklist`
+figure, because the underlying architectural claim it represents --
+SHAP PLUS combines SHAP's full-vector traceability with LIME's
+condition-style actionability -- is real and independently verifiable (the
+"traceability" claim specifically is: SHAP PLUS's audit vector empirically
+matches SHAP's bias-detection numbers exactly, on every dataset including
+the blind holdout). But it is a self-assessed structural claim, not a
+measured one, and should never again be allowed to blend silently into a
+single number without being called out. The conference paper's own C3b/C6/
+C7 scores have the identical property (Table II lists them "Qual.
+Checklist") and its own limitations section already says as much: these
+need independent-rater verification before being treated as definitive.
+This project just found a concrete, quantified example of why that caution
+matters.
+
+The honest overall claim, updated: SHAP PLUS decisively and robustly beats
+real LIME on fidelity and complexity (see the statistics above). It does
+**not** beat SHAP on the objectively measured CSF criteria -- SHAP wins
+those, consistently. What remains genuinely defensible is architectural,
+not yet a measured superiority claim: SHAP PLUS is the only one of the
+three that combines SHAP's audit completeness with a rendered, LIME-style
+readable rule, and that combination is real, but whether it makes SHAP PLUS
+more *suitable* than SHAP alone for a given deployment is a question a
+human study -- not another CSF number -- needs to answer.
 
 **What this still does not establish.** No Anchors, counterfactual-method,
 or interpretable-by-design (EBM) baseline is included. C3b (human

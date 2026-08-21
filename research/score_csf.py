@@ -1,11 +1,28 @@
 """Turns the raw benchmark measurements into the paper's 1-5 CSF scale
-(Table IV thresholds) and prints a Table-V-style comparison for all three
-methods across all three datasets.
+(Table IV thresholds) and prints a Table-V-style comparison for all methods
+across all datasets.
 
 C3b (human comprehensibility) is deliberately left unscored: it requires a
-human study (exactly what both source documents flag as missing), and this
-script's whole purpose is to stop treating unmeasured qualities as measured
-ones.
+human study, and this script's whole purpose is to stop treating unmeasured
+qualities as measured ones.
+
+C6 (Human Oversight) is a real, important case of exactly that problem, and
+it took a direct challenge from the user to catch it: an earlier version of
+this script scored C6 from a static, hand-authored checklist keyed only by
+method *name* -- identical on every dataset, because it never looked at any
+data at all. It happened to give SHAP PLUS exactly +1 over SHAP every time,
+which exactly canceled out SHAP's real, measured lead on C1/C3a on every
+single dataset -- manufacturing an "SHAP PLUS ties SHAP" headline that was
+an artifact of a checklist the same person built the method also wrote, not
+an emergent empirical finding. C6 is scored here for completeness (matching
+the conference paper's own methodology, which also used author-assessed
+checklists for C3b/C6/C7 and explicitly flagged that as needing independent
+verification before being treated as definitive) but is now excluded from
+the primary "Overall" figure and reported separately, clearly labeled, so it
+cannot silently move the headline number again. C2 and C7 are NOT checklist
+items -- both are computed from an actual double-run determinism check on
+real output (see benchmark_xai.py's *_consistency functions) -- so they stay
+in the measured/quantitative bucket.
 """
 
 from __future__ import annotations
@@ -89,12 +106,29 @@ def score_dataset(entry: dict) -> dict:
         scored["shap_plus"]["C4"] = _score_bias_gap(gap_full) if gap_full is not None else None
         scored["_c4_raw"] = c4
 
+    quantitative_criteria = ("C1", "C2", "C3a", "C4", "C7")
+    checklist_criteria = ("C1", "C2", "C3a", "C4", "C6", "C7")
     for method in ("shap", "lime", "shap_plus"):
-        values = [
+        # Both figures are computed from the pre-aggregation criteria only
+        # (fixed, explicit key lists) so neither average can accidentally
+        # include the other, or itself, as an input.
+        quant_values = [
             v for k, v in scored[method].items()
-            if isinstance(v, (int, float)) and k != "C1_audit"
+            if k in quantitative_criteria and isinstance(v, (int, float))
         ]
-        scored[method]["overall_measured"] = sum(values) / len(values) if values else None
+        all_values = [
+            v for k, v in scored[method].items()
+            if k in checklist_criteria and isinstance(v, (int, float))
+        ]
+        scored[method]["overall_quantitative"] = (
+            sum(quant_values) / len(quant_values) if quant_values else None
+        )
+        scored[method]["overall_with_checklist"] = (
+            sum(all_values) / len(all_values) if all_values else None
+        )
+        # Backwards-compatible alias; equal to overall_quantitative now that
+        # the self-assessed checklist item no longer silently blends in.
+        scored[method]["overall_measured"] = scored[method]["overall_quantitative"]
 
     return scored
 
@@ -112,7 +146,7 @@ def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json")
         print(f"\n=== {entry['name']} ===")
         header = f"{'Criterion':8s} {'SHAP':>8s} {'LIME':>8s} {'SHAP_PLUS':>10s}"
         print(header)
-        for crit in ("C1", "C2", "C3a", "C4", "C6", "C7"):
+        for crit in ("C1", "C2", "C3a", "C4", "C7"):
             row = []
             for method in ("shap", "lime", "shap_plus"):
                 v = scored[method].get(crit)
@@ -125,10 +159,24 @@ def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json")
                 f"   <- SHAP PLUS coverage alone, same basis SHAP is scored on (not in Overall)"
             )
         print(
-            f"{'Overall':8s} "
-            f"{scored['shap']['overall_measured']:8.2f} "
-            f"{scored['lime']['overall_measured']:8.2f} "
-            f"{scored['shap_plus']['overall_measured']:10.2f}"
+            f"{'Overall (quantitative, C1/C2/C3a/C4/C7)':40s} "
+            f"{scored['shap']['overall_quantitative']:8.2f} "
+            f"{scored['lime']['overall_quantitative']:8.2f} "
+            f"{scored['shap_plus']['overall_quantitative']:10.2f}"
+            "   <-- primary figure"
+        )
+        print(
+            f"{'C6 (self-assessed checklist, NOT dataset-dependent)':40s} "
+            f"{scored['shap']['C6']:8.2f} "
+            f"{scored['lime']['C6']:8.2f} "
+            f"{scored['shap_plus']['C6']:10.2f}"
+            "   <-- author-authored, needs independent rater verification"
+        )
+        print(
+            f"{'Overall (incl. self-assessed C6)':40s} "
+            f"{scored['shap']['overall_with_checklist']:8.2f} "
+            f"{scored['lime']['overall_with_checklist']:8.2f} "
+            f"{scored['shap_plus']['overall_with_checklist']:10.2f}"
         )
         print(
             f"  (raw) coverage/fidelity: SHAP={entry['shap']['coverage']:.3f} cov | "
@@ -147,10 +195,15 @@ def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json")
             )
         print(
             "  NOTE: C3b (human comprehensibility) and C5 (portfolio approval-rate "
-            "disparity, a model property not an XAI-method property) are intentionally "
-            "excluded from 'Overall' above -- C3b has no automated proxy and requires "
-            "a human study; including a guessed number for it would repeat the exact "
-            "flaw this benchmark exists to fix."
+            "disparity, a model property not an XAI-method property) are excluded from "
+            "both Overall figures -- C3b has no automated proxy and requires a human "
+            "study. C6 is excluded from the primary (quantitative) Overall specifically "
+            "because it is a static, author-authored checklist keyed only by method name "
+            "-- it does not vary by dataset because it never looks at any data -- and "
+            "reporting it blended into a single number let it silently cancel out SHAP's "
+            "real, measured lead on C1/C3a on every dataset tested. It is shown "
+            "separately above, and in a second Overall figure that includes it, so "
+            "nothing is hidden -- but the quantitative figure is the one to trust."
         )
 
     out_path = RESULTS_DIR / out_name

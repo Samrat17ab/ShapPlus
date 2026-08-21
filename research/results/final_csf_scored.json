@@ -7,7 +7,9 @@
       "C6": 4.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.333333333333333
+      "overall_quantitative": 4.4,
+      "overall_with_checklist": 4.333333333333333,
+      "overall_measured": 4.4
     },
     "lime": {
       "C1": 1.5,
@@ -16,7 +18,9 @@
       "C6": 4.0,
       "C7": 2.0,
       "C4": 4.0,
-      "overall_measured": 2.25
+      "overall_quantitative": 1.9,
+      "overall_with_checklist": 2.25,
+      "overall_measured": 1.9
     },
     "shap_plus": {
       "C1": 3.0,
@@ -26,7 +30,9 @@
       "C6": 5.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.333333333333333
+      "overall_quantitative": 4.2,
+      "overall_with_checklist": 4.333333333333333,
+      "overall_measured": 4.2
     },
     "_c4_raw": {
       "shap_gap": 0.23619531817610945,
@@ -70,7 +76,9 @@
       "C3a": 4.0,
       "C6": 4.0,
       "C7": 5.0,
-      "overall_measured": 4.6
+      "overall_quantitative": 4.75,
+      "overall_with_checklist": 4.6,
+      "overall_measured": 4.75
     },
     "lime": {
       "C1": 1.5,
@@ -78,7 +86,9 @@
       "C3a": 1.0,
       "C6": 4.0,
       "C7": 2.0,
-      "overall_measured": 2.3
+      "overall_quantitative": 1.875,
+      "overall_with_checklist": 2.3,
+      "overall_measured": 1.875
     },
     "shap_plus": {
       "C1": 4.0,
@@ -87,7 +97,9 @@
       "C3a": 4.0,
       "C6": 5.0,
       "C7": 5.0,
-      "overall_measured": 4.6
+      "overall_quantitative": 4.5,
+      "overall_with_checklist": 4.6,
+      "overall_measured": 4.5
     }
   },
   "hmda_vt": {
@@ -98,7 +110,9 @@
       "C6": 4.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.666666666666667
+      "overall_quantitative": 4.8,
+      "overall_with_checklist": 4.666666666666667,
+      "overall_measured": 4.8
     },
     "lime": {
       "C1": 1.5,
@@ -107,7 +121,9 @@
       "C6": 4.0,
       "C7": 2.0,
       "C4": 5.0,
-      "overall_measured": 2.4166666666666665
+      "overall_quantitative": 2.1,
+      "overall_with_checklist": 2.4166666666666665,
+      "overall_measured": 2.1
     },
     "shap_plus": {
       "C1": 4.0,
@@ -117,7 +133,9 @@
       "C6": 5.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.666666666666667
+      "overall_quantitative": 4.6,
+      "overall_with_checklist": 4.666666666666667,
+      "overall_measured": 4.6
     },
     "_c4_raw": {
       "shap_gap": 0.18777179869660887,
@@ -172,7 +190,9 @@
       "C6": 4.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.666666666666667
+      "overall_quantitative": 4.8,
+      "overall_with_checklist": 4.666666666666667,
+      "overall_measured": 4.8
     },
     "lime": {
       "C1": 1.5,
@@ -181,7 +201,9 @@
       "C6": 4.0,
       "C7": 2.0,
       "C4": 5.0,
-      "overall_measured": 2.4166666666666665
+      "overall_quantitative": 2.1,
+      "overall_with_checklist": 2.4166666666666665,
+      "overall_measured": 2.1
     },
     "shap_plus": {
       "C1": 4.0,
@@ -191,7 +213,9 @@
       "C6": 5.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_measured": 4.666666666666667
+      "overall_quantitative": 4.6,
+      "overall_with_checklist": 4.666666666666667,
+      "overall_measured": 4.6
     },
     "_c4_raw": {
       "shap_gap": 0.24732097640129527,
