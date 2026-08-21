@@ -12,6 +12,14 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local build/tooling output -- gitignored, never source.
+    "dist/**",
+    ".wrangler/**",
+    ".vinext/**",
+    "tmp/**",
+    // Python virtualenv -- vendored JS bundles inside installed packages
+    // (lime, matplotlib, shap, sklearn) are not part of this app.
+    ".venv-shap-plus/**",
   ]),
 ]);
 
