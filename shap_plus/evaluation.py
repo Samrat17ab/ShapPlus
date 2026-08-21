@@ -142,7 +142,8 @@ def _score_coverage(value: float) -> float:
 
 
 def _score_fidelity(value: float) -> float:
-    return 5.0 if value >= 0.85 else 4.0 if value >= 0.75 else 3.0 if value >= 0.65 else 2.0 if value >= 0.55 else 1.5
+    # Table IV, "Fidelity R^2 (LIME)" column: <0.55 -> 1 (None/non-compliant).
+    return 5.0 if value >= 0.85 else 4.0 if value >= 0.75 else 3.0 if value >= 0.65 else 2.0 if value >= 0.55 else 1.0
 
 
 def _score_jaccard(value: float) -> float:
@@ -159,5 +160,7 @@ def _score_bias_gap(value: float) -> float:
 
 
 def _score_disparity(value: float) -> float:
-    value = abs(value)
-    return 5.0 if value >= 0.05 else 4.0 if value >= 0.03 else 3.0 if value >= 0.01 else 2.0
+    # The paper defines no separate C5 threshold table; C5 (approval-rate
+    # disparity) is the same kind of gap metric as C4's bias gap, so it uses
+    # Table IV's "Bias Gap Delta" column directly, all five tiers included.
+    return _score_bias_gap(value)

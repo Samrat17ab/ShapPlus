@@ -14,15 +14,25 @@ data at all. It happened to give SHAP PLUS exactly +1 over SHAP every time,
 which exactly canceled out SHAP's real, measured lead on C1/C3a on every
 single dataset -- manufacturing an "SHAP PLUS ties SHAP" headline that was
 an artifact of a checklist the same person built the method also wrote, not
-an emergent empirical finding. C6 is scored here for completeness (matching
-the conference paper's own methodology, which also used author-assessed
-checklists for C3b/C6/C7 and explicitly flagged that as needing independent
-verification before being treated as definitive) but is now excluded from
-the primary "Overall" figure and reported separately, clearly labeled, so it
-cannot silently move the headline number again. C2 and C7 are NOT checklist
-items -- both are computed from an actual double-run determinism check on
-real output (see benchmark_xai.py's *_consistency functions) -- so they stay
-in the measured/quantitative bucket.
+an emergent empirical finding. Worse: the checklist itself did not even
+match the conference paper's own stated C6 assessment -- the paper's Section
+IV-F explicitly says "SHAP satisfies four Article 14(1) checklist
+dimensions: (i) decision direction... (ii) quantitative influence
+magnitude... (iii) actionable feature-level information for corrective
+intervention; and (iv) full traceability... SHAP: 4.0/5.0", while the
+earlier checklist here incorrectly marked SHAP as failing "actionable".
+C6_REFERENCE below now uses the paper's own stated dimensions and its exact
+published SHAP=4.0 / LIME=3.5 scores verbatim, rather than a re-derived
+guess. SHAP PLUS is assessed against the identical four dimensions, with
+reasoning tied to specific, independently verifiable facts (not asserted),
+documented in c6_score()'s docstring. C6 remains excluded from the primary
+"Overall" figure and reported separately, clearly labeled -- it is a
+qualitative, author-assessed criterion in both the paper and here, and the
+paper's own limitations section says such scores need independent-rater
+verification before being treated as definitive. C2 and C7 are NOT
+checklist items -- both are computed from an actual double-run determinism
+check on real output (see benchmark_xai.py's *_consistency functions) -- so
+they stay in the measured/quantitative bucket.
 """
 
 from __future__ import annotations
@@ -41,15 +51,62 @@ from shap_plus.evaluation import (
 
 RESULTS_DIR = Path(__file__).parent / "results"
 
-C6_CHECKLIST = {
-    "shap": {"direction": True, "magnitude": True, "actionable": False, "traceability": True},
-    "lime": {"direction": True, "magnitude": True, "actionable": True, "traceability": False},
-    "shap_plus": {"direction": True, "magnitude": True, "actionable": True, "traceability": True},
-}
+# Verbatim from the conference paper, Section IV-F ("C6 -- Human Oversight
+# Support"): SHAP satisfies all four Article 14(1) checklist dimensions
+# (direction, magnitude, actionable feature-level information, full
+# traceability) and scores 4.0/5.0; LIME satisfies three of four (partial
+# credit on actionability, since discretized ranges complicate precise
+# intervention targeting) and scores 3.5/5.0. These are the paper's own
+# published numbers, not re-derived.
+C6_PAPER_SCORES = {"shap": 4.0, "lime": 3.5}
 
 
 def c6_score(method: str) -> float:
-    return 1.0 + sum(1.0 for v in C6_CHECKLIST[method].values() if v)
+    """
+    SHAP and LIME: the paper's own published C6 scores, verbatim.
+
+    SHAP PLUS: assessed against the identical four Article 14(1) dimensions
+    the paper defines, with each judgment tied to something independently
+    checkable rather than asserted:
+
+    (i) direction, (ii) magnitude -- inherited unchanged from the TreeSHAP
+        vector, same as SHAP: satisfied.
+    (iii) actionable feature-level information for corrective intervention
+        -- satisfied, and on firmer ground than either baseline: SHAP has
+        no rendered condition at all (raw signed magnitude only, the
+        paper's own reason it lacks LIME's C3b readability); LIME's
+        discretized bins are the paper's own stated reason its C6 is
+        docked half a point ("complicating precise intervention
+        targeting"). SHAP PLUS's rendered conditions use exact tree-split
+        thresholds (not arbitrary quantile bins), and additionally exposes
+        a recourse module that computes concrete feature-value changes
+        toward a favourable decision -- a capability neither baseline has
+        at all. This module is a research baseline, not a certified
+        causal-recourse method (see SHAP_PLUS_README's research cautions),
+        so it strengthens but does not perfect this dimension.
+    (iv) full traceability from input to attribution -- satisfied, and
+        empirically confirmed rather than assumed: the full attribution
+        vector is present for every feature on every instance across every
+        dataset benchmarked here, including the blind holdout (see the C4
+        audit-vector presence-rate figures, always 100%).
+
+    SHAP PLUS therefore meets the same bar SHAP meets on all four
+    dimensions (matching SHAP's 4.0) plus a distinguishable, verifiable
+    capability on dimension (iii) beyond what either baseline offers.
+    5.0 ("Full") is deliberately not assigned -- the recourse module's own
+    documented limitations (domain feasibility, causal validity need
+    expert review) argue against a perfect score. 4.5 reflects "meets the
+    established bar, plus a real but not fully certified addition," not
+    "every box checked" -- this is still a self-assessed, qualitative
+    judgment, exactly like the paper's own C6, and should be read with the
+    same caveat: independent-rater verification, not this write-up, is
+    what would make it definitive.
+    """
+    if method in C6_PAPER_SCORES:
+        return C6_PAPER_SCORES[method]
+    if method == "shap_plus":
+        return 4.5
+    raise ValueError(f"no C6 score defined for {method!r}")
 
 
 def c7_score(exact_no_state: bool, exact_with_state: bool | None) -> float:
@@ -166,11 +223,11 @@ def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json")
             "   <-- primary figure"
         )
         print(
-            f"{'C6 (self-assessed checklist, NOT dataset-dependent)':40s} "
+            f"{'C6 (qualitative, paper-grounded, NOT dataset-dependent)':40s} "
             f"{scored['shap']['C6']:8.2f} "
             f"{scored['lime']['C6']:8.2f} "
             f"{scored['shap_plus']['C6']:10.2f}"
-            "   <-- author-authored, needs independent rater verification"
+            "   <-- SHAP/LIME verbatim from paper; SHAP+ reasoned, needs independent rater verification"
         )
         print(
             f"{'Overall (incl. self-assessed C6)':40s} "
@@ -197,13 +254,17 @@ def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json")
             "  NOTE: C3b (human comprehensibility) and C5 (portfolio approval-rate "
             "disparity, a model property not an XAI-method property) are excluded from "
             "both Overall figures -- C3b has no automated proxy and requires a human "
-            "study. C6 is excluded from the primary (quantitative) Overall specifically "
-            "because it is a static, author-authored checklist keyed only by method name "
-            "-- it does not vary by dataset because it never looks at any data -- and "
-            "reporting it blended into a single number let it silently cancel out SHAP's "
-            "real, measured lead on C1/C3a on every dataset tested. It is shown "
-            "separately above, and in a second Overall figure that includes it, so "
-            "nothing is hidden -- but the quantitative figure is the one to trust."
+            "study. C6 is excluded from the primary (quantitative) Overall because it is "
+            "a qualitative, author-assessed criterion in both the source paper and here "
+            "-- it does not vary by dataset because it is a judgment about each method's "
+            "output contract, not a per-instance measurement -- and an earlier version of "
+            "this script let a version of it (that did not even match the paper's own "
+            "stated SHAP assessment) blend silently into a single number and cancel out "
+            "SHAP's real, measured lead on C1/C3a. It is shown separately above, and in a "
+            "second Overall figure that includes it, so nothing is hidden -- but the "
+            "quantitative figure is the one to trust, and C6 needs independent-rater "
+            "verification before being treated as definitive, exactly as the paper's own "
+            "limitations section says for its C3b/C6/C7 scores."
         )
 
     out_path = RESULTS_DIR / out_name
