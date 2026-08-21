@@ -1,0 +1,1037 @@
+{
+  "selected_hyperparams": {
+    "min_leaf_weight_fraction": 0.0015,
+    "quantile_grid_size": 39,
+    "objective_weights": [
+      0.4,
+      0.1,
+      0.3,
+      0.2
+    ]
+  },
+  "selection_criterion": "max(min_score across dev datasets, then mean_score) on TUNE pool only",
+  "tune_pool_size_per_dataset": 40,
+  "tune_seed": 20260821,
+  "full_grid_log": [
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.02,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7001113025127077,
+          "complexity": 0.5789416666666668,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6085492698707861,
+          "complexity": 0.48009166666666675,
+          "score": 3.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7323786786045743,
+          "complexity": 0.5566208333333333,
+          "score": 3.0
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.0
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.02,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6408687018538007,
+          "complexity": 0.4870875,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.5496231861856293,
+          "complexity": 0.36388333333333334,
+          "score": 3.25
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.689006148359405,
+          "complexity": 0.45807083333333337,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.25
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.02,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.5802396442804791,
+          "complexity": 0.4297291666666667,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.5300926167313111,
+          "complexity": 0.34075,
+          "score": 3.25
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.6636540489305393,
+          "complexity": 0.4285708333333334,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.25
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.02,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7217314925171809,
+          "complexity": 0.5809625,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6227522037733199,
+          "complexity": 0.46647083333333333,
+          "score": 3.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7161332442305104,
+          "complexity": 0.5808041666666667,
+          "score": 3.0
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.0
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.02,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6667256942781299,
+          "complexity": 0.49321666666666675,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.572133162659893,
+          "complexity": 0.36783333333333335,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.6621840536268196,
+          "complexity": 0.45849166666666674,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.02,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6097229032499442,
+          "complexity": 0.4381916666666667,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.544744947749891,
+          "complexity": 0.3400875,
+          "score": 3.25
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.6402689994334176,
+          "complexity": 0.433575,
+          "score": 3.0
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.0833333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.01,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7560711187533894,
+          "complexity": 0.5982125,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.670574942755859,
+          "complexity": 0.5013875,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7874914824466546,
+          "complexity": 0.5752291666666668,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.3333333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.01,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6919125838421177,
+          "complexity": 0.5173708333333333,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6188500984002434,
+          "complexity": 0.40732916666666663,
+          "score": 3.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7502736818394058,
+          "complexity": 0.4863375,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.01,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6348878651453843,
+          "complexity": 0.4633625,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.5827602225232533,
+          "complexity": 0.36992916666666675,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7150780234142283,
+          "complexity": 0.448425,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.3333333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.01,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.769853777869956,
+          "complexity": 0.5948625000000001,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6946019170734755,
+          "complexity": 0.5046,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7792445616208583,
+          "complexity": 0.5931041666666668,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.3333333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.01,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7182747595298922,
+          "complexity": 0.5238,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6445615933700753,
+          "complexity": 0.4087875,
+          "score": 3.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7355176420243714,
+          "complexity": 0.49002500000000004,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.3333333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.01,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6666394138798288,
+          "complexity": 0.4755166666666667,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6084432417844403,
+          "complexity": 0.37575416666666667,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7001366349625944,
+          "complexity": 0.4519541666666667,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.006,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7786925306391181,
+          "complexity": 0.6002000000000001,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7234843911672402,
+          "complexity": 0.5074875,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.8128688127194976,
+          "complexity": 0.5886875,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.3333333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.006,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7198843515608842,
+          "complexity": 0.5309541666666667,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6809926212958138,
+          "complexity": 0.443225,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7675184434759492,
+          "complexity": 0.49435833333333334,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.006,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6662013112772357,
+          "complexity": 0.4802083333333334,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6377119858833797,
+          "complexity": 0.39765000000000006,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7403850853452276,
+          "complexity": 0.46597083333333333,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.006,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.790199877454753,
+          "complexity": 0.5931625,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7420974982790638,
+          "complexity": 0.5072125,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.8077628160247036,
+          "complexity": 0.6019833333333333,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.3333333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.006,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7404147730096489,
+          "complexity": 0.5318625000000001,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6953237691795717,
+          "complexity": 0.4372791666666666,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7612382799071191,
+          "complexity": 0.49785,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.006,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6991037531482416,
+          "complexity": 0.49445416666666675,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6560897240281267,
+          "complexity": 0.39762916666666664,
+          "score": 4.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7382113890647357,
+          "complexity": 0.4750791666666667,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.003,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7946941097594854,
+          "complexity": 0.6002000000000001,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7538033318421232,
+          "complexity": 0.50925,
+          "score": 4.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.8348441209548948,
+          "complexity": 0.5980666666666667,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.003,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7558817194601041,
+          "complexity": 0.5509458333333335,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7258901562991597,
+          "complexity": 0.472825,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.789627602662023,
+          "complexity": 0.5057666666666668,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.003,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6840760648944387,
+          "complexity": 0.4904041666666667,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6849736092410256,
+          "complexity": 0.42342499999999994,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7589598175155823,
+          "complexity": 0.47424166666666673,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.003,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.8041053937262955,
+          "complexity": 0.5932125000000001,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7726328623766461,
+          "complexity": 0.5079625,
+          "score": 4.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.8308502750843478,
+          "complexity": 0.6071125,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.003,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7600361310231123,
+          "complexity": 0.5418958333333335,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7338737528811343,
+          "complexity": 0.46055833333333335,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7805701565785752,
+          "complexity": 0.5048208333333334,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.003,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7181038713438254,
+          "complexity": 0.5064291666666667,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.6917686097160374,
+          "complexity": 0.4182666666666667,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.759683719375462,
+          "complexity": 0.48566666666666675,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.0015,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.801463693325888,
+          "complexity": 0.6002000000000001,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7785096995999882,
+          "complexity": 0.5069125000000001,
+          "score": 4.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.8400166548551973,
+          "complexity": 0.5980166666666668,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.0015,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7664473672251553,
+          "complexity": 0.5548958333333334,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7535749043046981,
+          "complexity": 0.47645,
+          "score": 4.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.784640594820243,
+          "complexity": 0.5013166666666667,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.0015,
+        "quantile_grid_size": 19,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.6958859556693915,
+          "complexity": 0.4984416666666667,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.725175211740598,
+          "complexity": 0.4433208333333333,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7622627355561529,
+          "complexity": 0.4759166666666667,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.0015,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.55,
+          0.15,
+          0.1,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.8081132811911221,
+          "complexity": 0.5932125000000001,
+          "score": 3.0
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7955234117865178,
+          "complexity": 0.5108625,
+          "score": 4.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.8461377812394566,
+          "complexity": 0.61585,
+          "score": 3.5
+        }
+      },
+      "min_score": 3.0,
+      "mean_score": 3.5
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.0015,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.2
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7666054484257759,
+          "complexity": 0.5462958333333334,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7618739847933671,
+          "complexity": 0.47520000000000007,
+          "score": 4.0
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7880089516248797,
+          "complexity": 0.5056541666666667,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.8333333333333335
+    },
+    {
+      "hyperparams": {
+        "min_leaf_weight_fraction": 0.0015,
+        "quantile_grid_size": 39,
+        "objective_weights": [
+          0.35,
+          0.05,
+          0.35,
+          0.25
+        ]
+      },
+      "per_dataset": {
+        "home_credit": {
+          "coverage": 0.7512993844914799,
+          "fidelity": 0.7188697484831184,
+          "complexity": 0.5043041666666668,
+          "score": 3.5
+        },
+        "hmeq": {
+          "coverage": 0.9737065910538831,
+          "fidelity": 0.7211252828384641,
+          "complexity": 0.4344708333333333,
+          "score": 3.5
+        },
+        "hmda_vt": {
+          "coverage": 0.973916929393209,
+          "fidelity": 0.7796111226435414,
+          "complexity": 0.4964625000000001,
+          "score": 4.0
+        }
+      },
+      "min_score": 3.5,
+      "mean_score": 3.6666666666666665
+    }
+  ]
+}

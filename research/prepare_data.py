@@ -126,8 +126,8 @@ def _parse_age_bin(value: object) -> float:
         return np.nan
 
 
-def load_hmda_vt() -> tuple[pd.DataFrame, pd.Series, str, list[str], str]:
-    path = DATA_DIR / "hmda_vt_sample.csv"
+def _load_hmda(filename: str, display_name: str) -> tuple[pd.DataFrame, pd.Series, str, list[str], str]:
+    path = DATA_DIR / filename
     df = pd.read_csv(path, low_memory=False)
     df = df[df["action_taken"].isin([1, 3])].copy()
     y = (df["action_taken"] == 3).astype(int)  # 1 = denied (adverse)
@@ -171,19 +171,42 @@ def load_hmda_vt() -> tuple[pd.DataFrame, pd.Series, str, list[str], str]:
     X = X.fillna(X.median(numeric_only=True))
 
     protected_feature = "derived_sex"
-    return X, y, protected_feature, categorical_columns, "HMDA Vermont 2023 (approval/denial)"
+    return X, y, protected_feature, categorical_columns, display_name
 
 
+def load_hmda_vt() -> tuple[pd.DataFrame, pd.Series, str, list[str], str]:
+    return _load_hmda("hmda_vt_sample.csv", "HMDA Vermont 2023 (approval/denial)")
+
+
+def load_hmda_nh() -> tuple[pd.DataFrame, pd.Series, str, list[str], str]:
+    return _load_hmda("hmda_nh_sample.csv", "HMDA New Hampshire 2023 (approval/denial)")
+
+
+# Datasets used to develop and tune SHAP PLUS: any hyperparameter search may
+# look at metrics computed on these (subject to the tune/report split within
+# each -- see research/select_hyperparameters.py).
 LOADERS = {
     "home_credit": load_home_credit,
     "hmeq": load_hmeq,
     "hmda_vt": load_hmda_vt,
 }
 
+# Held out completely from hyperparameter selection. This dataset is loaded
+# and scored exactly once, after hyperparameters are already frozen, purely
+# to check that a configuration chosen on the datasets above generalizes to a
+# state (different regional economics, different lender mix, unseen at
+# tuning time) it has never influenced in any way.
+HOLDOUT_LOADERS = {
+    "hmda_nh": load_hmda_nh,
+}
+
+ALL_LOADERS = {**LOADERS, **HOLDOUT_LOADERS}
+
 
 if __name__ == "__main__":
-    for key, loader in LOADERS.items():
+    for key, loader in ALL_LOADERS.items():
+        tag = "holdout" if key in HOLDOUT_LOADERS else "dev"
         X, y, protected, cats, name = loader()
-        print(f"{key:12s} {name:35s} rows={len(X):>7} cols={X.shape[1]:>3} "
+        print(f"{key:12s} [{tag:7s}] {name:40s} rows={len(X):>7} cols={X.shape[1]:>3} "
               f"positive_rate={y.mean():.4f} protected={protected} n_cat={len(cats)} "
               f"nulls_after_impute={int(X.isna().sum().sum())}")

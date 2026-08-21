@@ -1,0 +1,45 @@
+Loading tune pools (disjoint from report/holdout instances) ...
+  home_credit: tune pool n=40 (indices [4679, 38861, 23326, 14489, 31508]...)
+  hmeq: tune pool n=40 (indices [1065, 1035, 464, 202, 645]...)
+  hmda_vt: tune pool n=40 (indices [1736, 1119, 2517, 2730, 1822]...)
+
+Searching 30 configurations on tune pools only ...
+  [ 1/30] min_frac=0.02    qgrid=19  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.000  (25s elapsed)
+  [ 2/30] min_frac=0.02    qgrid=19  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.000 mean_score=3.250  (48s elapsed)
+  [ 3/30] min_frac=0.02    qgrid=19  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.000 mean_score=3.250  (70s elapsed)
+  [ 4/30] min_frac=0.02    qgrid=39  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.000  (98s elapsed)
+  [ 5/30] min_frac=0.02    qgrid=39  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.500 mean_score=3.500  (127s elapsed)
+  [ 6/30] min_frac=0.02    qgrid=39  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.000 mean_score=3.083  (157s elapsed)
+  [ 7/30] min_frac=0.01    qgrid=19  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.333  (178s elapsed)
+  [ 8/30] min_frac=0.01    qgrid=19  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.000 mean_score=3.500  (202s elapsed)
+  [ 9/30] min_frac=0.01    qgrid=19  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.000 mean_score=3.333  (230s elapsed)
+  [10/30] min_frac=0.01    qgrid=39  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.333  (266s elapsed)
+  [11/30] min_frac=0.01    qgrid=39  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.000 mean_score=3.333  (297s elapsed)
+  [12/30] min_frac=0.01    qgrid=39  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.500 mean_score=3.500  (327s elapsed)
+  [13/30] min_frac=0.006   qgrid=19  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.333  (354s elapsed)
+  [14/30] min_frac=0.006   qgrid=19  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.500 mean_score=3.667  (378s elapsed)
+  [15/30] min_frac=0.006   qgrid=19  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.500 mean_score=3.500  (402s elapsed)
+  [16/30] min_frac=0.006   qgrid=39  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.333  (435s elapsed)
+  [17/30] min_frac=0.006   qgrid=39  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.500 mean_score=3.667  (465s elapsed)
+  [18/30] min_frac=0.006   qgrid=39  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.500 mean_score=3.667  (496s elapsed)
+  [19/30] min_frac=0.003   qgrid=19  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.500  (523s elapsed)
+  [20/30] min_frac=0.003   qgrid=19  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.000 mean_score=3.500  (547s elapsed)
+  [21/30] min_frac=0.003   qgrid=19  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.500 mean_score=3.667  (570s elapsed)
+  [22/30] min_frac=0.003   qgrid=39  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.500  (594s elapsed)
+  [23/30] min_frac=0.003   qgrid=39  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.500 mean_score=3.667  (617s elapsed)
+  [24/30] min_frac=0.003   qgrid=39  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.500 mean_score=3.667  (644s elapsed)
+  [25/30] min_frac=0.0015  qgrid=19  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.500  (666s elapsed)
+  [26/30] min_frac=0.0015  qgrid=19  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.000 mean_score=3.667  (689s elapsed)
+  [27/30] min_frac=0.0015  qgrid=19  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.500 mean_score=3.667  (709s elapsed)
+  [28/30] min_frac=0.0015  qgrid=39  weights=(0.55, 0.15, 0.1, 0.2)  min_score=3.000 mean_score=3.500  (734s elapsed)
+  [29/30] min_frac=0.0015  qgrid=39  weights=(0.4, 0.1, 0.3, 0.2)  min_score=3.500 mean_score=3.833  (760s elapsed)
+  [30/30] min_frac=0.0015  qgrid=39  weights=(0.35, 0.05, 0.35, 0.25)  min_score=3.500 mean_score=3.667  (786s elapsed)
+
+Selected: {'min_leaf_weight_fraction': 0.0015, 'quantile_grid_size': 39, 'objective_weights': (0.4, 0.1, 0.3, 0.2)}
+  worst-case (min) dataset score: 3.500
+  mean dataset score: 3.833
+    home_credit  coverage=0.751 fidelity=0.767 complexity=0.546 score=3.500
+    hmeq         coverage=0.974 fidelity=0.762 complexity=0.475 score=4.000
+    hmda_vt      coverage=0.974 fidelity=0.788 complexity=0.506 score=4.000
+
+Saved selection + full grid log to C:\Users\samla\Documents\Samrat Lamsal\research\results\selected_hyperparameters.json

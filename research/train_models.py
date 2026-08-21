@@ -12,7 +12,7 @@ import pandas as pd
 from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
-from prepare_data import LOADERS
+from prepare_data import ALL_LOADERS
 
 OUT_DIR = Path(__file__).parent / "artifacts"
 OUT_DIR.mkdir(exist_ok=True)
@@ -29,7 +29,7 @@ def split_64_16_20(X: pd.DataFrame, y: pd.Series, seed: int = 42):
 
 
 def train_one(key: str) -> dict:
-    X, y, protected, categorical_columns, name = LOADERS[key]()
+    X, y, protected, categorical_columns, name = ALL_LOADERS[key]()
     X_train, X_val, X_test, y_train, y_val, y_test = split_64_16_20(X, y)
 
     train_set = lgb.Dataset(X_train, label=y_train)
@@ -88,7 +88,7 @@ def train_one(key: str) -> dict:
 
 if __name__ == "__main__":
     all_meta = {}
-    for key in LOADERS:
+    for key in ALL_LOADERS:
         print(f"Training LightGBM on {key} ...")
         meta = train_one(key)
         all_meta[key] = meta

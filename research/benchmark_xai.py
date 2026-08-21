@@ -106,6 +106,8 @@ def run_plain_shap(booster, feature_names, sample_frame, protected_feature):
     return {
         "coverage_mean": float(np.mean(coverages)),
         "complexity_mean": float(np.mean(complexities)),
+        "coverage_values": coverages,
+        "complexity_values": complexities,
         "raw_values": values,
         "protected_attribution": protected_attr,
         "presence_rate": 1.0 if protected_idx is not None else None,
@@ -166,6 +168,8 @@ def run_plain_lime(booster, X_train, feature_names, categorical_columns, sample_
     return {
         "fidelity_mean": float(np.mean(fidelities)),
         "complexity_mean": float(np.mean(complexities)),
+        "fidelity_values": fidelities,
+        "complexity_values": complexities,
         "protected_attribution": protected_attr,
         "presence_rate": presence_rate,
     }
@@ -210,7 +214,21 @@ def lime_consistency(booster, X_train, feature_names, categorical_columns, sampl
 # SHAP PLUS hybrid
 # ---------------------------------------------------------------------------
 
-def build_shap_plus(booster, X_train, feature_names, categorical_columns, protected_feature, dataset_key):
+DEFAULT_SHAP_PLUS_HYPERPARAMS = {
+    "max_rule_terms": 5,
+    "neighborhood_size": 512,
+    "fidelity_threshold": 0.75,
+    # min_leaf_weight_fraction, quantile_grid_size, objective_weights left at
+    # the SHAPPlusExplainer class defaults unless overridden by a caller that
+    # has actually selected them via tune_hyperparameters.py.
+}
+
+
+def build_shap_plus(
+    booster, X_train, feature_names, categorical_columns, protected_feature, dataset_key,
+    hyperparams: dict | None = None,
+):
+    params = {**DEFAULT_SHAP_PLUS_HYPERPARAMS, **(hyperparams or {})}
     return SHAPPlusExplainer(
         booster,
         X_train,
@@ -219,11 +237,9 @@ def build_shap_plus(booster, X_train, feature_names, categorical_columns, protec
         positive_class_is_adverse=True,
         decision_threshold=0.5,
         top_k=min(TOP_K, len(feature_names)),
-        max_rule_terms=5,
-        neighborhood_size=512,
-        fidelity_threshold=0.75,
         immutable_features=IMMUTABLE.get(dataset_key, set()),
         actionable_features=ACTIONABLE.get(dataset_key, set()),
+        **params,
         model_version=f"{dataset_key}-lightgbm-v1",
     )
 
@@ -252,6 +268,9 @@ def run_shap_plus(explainer, sample_frame, protected_feature, feature_names):
         "coverage_mean": float(np.mean(coverages)),
         "fidelity_mean": float(np.mean(fidelities)),
         "complexity_mean": float(np.mean(complexities)),
+        "coverage_values": coverages,
+        "fidelity_values": fidelities,
+        "complexity_values": complexities,
         "fallback_rate": float(np.mean(fallback_flags)),
         "protected_attribution_full": full_attr,
         "protected_attribution_visible": visible_attr,
@@ -327,7 +346,22 @@ def c7_score(exact_reproducible_no_state: bool, exact_reproducible_with_state: b
 # Main benchmark loop
 # ---------------------------------------------------------------------------
 
-def run_dataset(key: str, n_explain: int, n_consistency: int, n_consistency_runs: int, seed: int = 42) -> dict:
+def run_dataset(
+    key: str,
+    n_explain: int,
+    n_consistency: int,
+    n_consistency_runs: int,
+    seed: int = 42,
+    sample_idx: np.ndarray | None = None,
+    consistency_idx: np.ndarray | None = None,
+    hyperparams: dict | None = None,
+) -> dict:
+    """
+    If sample_idx/consistency_idx are given, those exact positional indices
+    into X_test are used (e.g. a report-only pool that a hyperparameter
+    search never looked at). Otherwise falls back to random sampling, for
+    standalone/exploratory use.
+    """
     print(f"\n=== {key} ===")
     t0 = time.time()
     meta, booster, X_train, X_test, y_test = load_artifacts(key)
@@ -336,10 +370,16 @@ def run_dataset(key: str, n_explain: int, n_consistency: int, n_consistency_runs
     protected_feature = meta["protected_feature"]
 
     rng = np.random.default_rng(seed)
-    idx = rng.choice(len(X_test), size=min(n_explain, len(X_test)), replace=False)
+    if sample_idx is None:
+        idx = rng.choice(len(X_test), size=min(n_explain, len(X_test)), replace=False)
+    else:
+        idx = np.asarray(sample_idx)
     sample_frame = X_test.iloc[idx].reset_index(drop=True)
 
-    idx_c = rng.choice(len(X_test), size=min(n_consistency, len(X_test)), replace=False)
+    if consistency_idx is None:
+        idx_c = rng.choice(len(X_test), size=min(n_consistency, len(X_test)), replace=False)
+    else:
+        idx_c = np.asarray(consistency_idx)
     consistency_frame = X_test.iloc[idx_c].reset_index(drop=True)
 
     result = {"dataset": key, "name": meta["name"], "model_metrics": meta["metrics"]}
@@ -351,6 +391,8 @@ def run_dataset(key: str, n_explain: int, n_consistency: int, n_consistency_runs
     result["shap"] = {
         "coverage": shap_res["coverage_mean"],
         "complexity": shap_res["complexity_mean"],
+        "coverage_values": shap_res["coverage_values"],
+        "complexity_values": shap_res["complexity_values"],
         "consistency": shap_cons,
         "exact_reproducible": shap_exact,
         "presence_rate": shap_res["presence_rate"],
@@ -377,6 +419,8 @@ def run_dataset(key: str, n_explain: int, n_consistency: int, n_consistency_runs
     result["lime"] = {
         "fidelity": lime_res["fidelity_mean"],
         "complexity": lime_res["complexity_mean"],
+        "fidelity_values": lime_res["fidelity_values"],
+        "complexity_values": lime_res["complexity_values"],
         "consistency_stochastic": lime_cons_stoch,
         "consistency_fixed_seed": lime_cons_fixed,
         "exact_reproducible_fixed_seed": lime_exact_fixed,
@@ -387,13 +431,19 @@ def run_dataset(key: str, n_explain: int, n_consistency: int, n_consistency_runs
     # ---- SHAP PLUS ----
     print("  SHAP PLUS ...", end=" ", flush=True)
     t3 = time.time()
-    sp_explainer = build_shap_plus(booster, X_train, feature_names, categorical_columns, protected_feature, key)
+    sp_explainer = build_shap_plus(
+        booster, X_train, feature_names, categorical_columns, protected_feature, key,
+        hyperparams=hyperparams,
+    )
     sp_res = run_shap_plus(sp_explainer, sample_frame, protected_feature, feature_names)
     sp_cons, sp_exact = shap_plus_consistency(sp_explainer, consistency_frame)
     result["shap_plus"] = {
         "coverage": sp_res["coverage_mean"],
         "fidelity": sp_res["fidelity_mean"],
         "complexity": sp_res["complexity_mean"],
+        "coverage_values": sp_res["coverage_values"],
+        "fidelity_values": sp_res["fidelity_values"],
+        "complexity_values": sp_res["complexity_values"],
         "fallback_rate": sp_res["fallback_rate"],
         "consistency": sp_cons,
         "exact_reproducible": sp_exact,
@@ -446,6 +496,9 @@ def run_dataset(key: str, n_explain: int, n_consistency: int, n_consistency_runs
         )
 
     result["protected_feature"] = protected_feature
+    result["sample_idx"] = idx.tolist()
+    result["consistency_idx"] = idx_c.tolist()
+    result["hyperparams"] = hyperparams or dict(DEFAULT_SHAP_PLUS_HYPERPARAMS)
     print(f"  dataset total: {time.time()-t0:.1f}s")
     return result
 

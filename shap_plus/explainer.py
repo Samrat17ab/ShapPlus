@@ -54,6 +54,17 @@ class SHAPPlusExplainer:
     attribution_fn:
         Optional test/research hook returning ``(values, expected_value)``. When
         omitted, genuine SHAP ``TreeExplainer`` values are used.
+
+    Notes
+    -----
+    ``min_leaf_weight_fraction``, ``quantile_grid_size``, and
+    ``objective_weights`` default to the configuration selected by
+    ``research/tune_hyperparameters.py`` on a tune-only instance pool,
+    disjoint from every dataset's reported results and from a fourth,
+    entirely held-out dataset used purely to check generalization. See
+    ``research/results/selected_hyperparameters.json`` for the full grid
+    search log and ``research/final_validation.py`` / ``research/
+    statistical_tests.py`` for how the reported numbers were produced.
     """
 
     def __init__(
@@ -72,7 +83,7 @@ class SHAPPlusExplainer:
         neighborhood_size: int = 512,
         fidelity_threshold: float = 0.75,
         sign_consistency_threshold: float = 0.6,
-        min_leaf_weight_fraction: float = 0.006,
+        min_leaf_weight_fraction: float = 0.0015,
         quantile_grid_size: int = 39,
         local_importance_weight: float = 0.8,
         objective_weights: tuple[float, float, float, float] = (0.40, 0.10, 0.30, 0.20),

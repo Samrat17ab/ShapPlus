@@ -43,6 +43,80 @@ when that fidelity is 3x a real LIME baseline's -- this is a property of the
 scoring rule's asymmetry (SHAP is never scored on fidelity at all), not
 evidence the hybrid's audit-grade coverage is worse than SHAP's.
 
+## Empirical validation
+
+Results in `research/results/final_*` follow a protocol built specifically to
+avoid two failure modes common in XAI evaluation: tuning an explainer's own
+hyperparameters on the same instances used to report its performance, and
+claiming generalization without ever testing on data the tuning process
+could not have influenced.
+
+**Datasets.** Home Credit Default Risk (307,511 rows, continuity with the
+conference paper), HMEQ (5,960 rows, no demographic columns), and HMDA
+Vermont 2023 (13,970 real approval/denial decisions) are the three
+*development* datasets -- SHAP PLUS's hyperparameters may be selected using
+data from these. HMDA New Hampshire 2023 (36,576 rows) is a *holdout*
+dataset: `research/tune_hyperparameters.py` never loads it, so its results
+are a genuine blind generalization check, not a second look at data already
+used to pick a configuration.
+
+**Split.** Within each development dataset's held-out test set (itself never
+seen by the LightGBM classifier), a 40-instance tune pool is drawn with a
+seed independent of the report pool. `research/tune_hyperparameters.py`
+grid-searches `min_leaf_weight_fraction`, `quantile_grid_size`, and
+`objective_weights` using *only* the tune pools, selecting the configuration
+that maximizes the **worst-case** (minimum) combined C1/C3a score across the
+three development datasets jointly -- not the average, and never a single
+dataset -- specifically so a configuration cannot win by overfitting to
+whichever dataset happens to be easiest. `research/final_validation.py` then
+runs the full SHAP/LIME/SHAP PLUS benchmark, with that frozen configuration
+and zero further adjustment, on: (a) each development dataset's report pool,
+provably disjoint from its tune pool (`final_validation.py` asserts this),
+and (b) the entire holdout dataset.
+
+**Result: it generalizes.** Report-pool fidelity met or exceeded tune-pool
+fidelity on every development dataset (no overfitting collapse), and the
+holdout dataset's numbers (fidelity R² 0.793, coverage 0.965) are close to
+indistinguishable from the "seen" HMDA Vermont dataset's (R² 0.803, coverage
+0.972) despite the hyperparameters never having been influenced by New
+Hampshire in any way.
+
+**Statistical testing** (`research/statistical_tests.py`), paired per
+instance since both methods are computed on the same rows:
+
+| Dataset | Fidelity vs LIME (mean diff, 95% CI) | Complexity vs LIME (mean diff, 95% CI) | Wilcoxon p |
+|---|---|---|---|
+| Home Credit | +0.553 [+0.532, +0.573] | −0.478 [−0.490, −0.467] | ≈2×10⁻²⁶ |
+| HMEQ | +0.524 [+0.500, +0.548] | −0.487 [−0.499, −0.476] | ≈2×10⁻²⁶ |
+| HMDA VT | +0.517 [+0.478, +0.555] | −0.517 [−0.532, −0.503] | ≈2×10⁻²⁶ |
+| HMDA NH (holdout) | +0.520 [+0.483, +0.556] | −0.529 [−0.542, −0.515] | ≈2×10⁻²⁶ |
+
+SHAP PLUS's advantage over real LIME on both fidelity (higher is better) and
+complexity (lower is better) is not a point-estimate artifact -- it holds
+with overwhelming statistical significance and large paired effect sizes
+(Cohen's d 2.1-4.3 for fidelity, -5.8 to -6.8 for complexity) on every
+dataset, including the one the tuning process never saw.
+
+**The honest limit: SHAP PLUS vs SHAP is a genuine toss-up, not a robust
+win.** A Dirichlet(1) Monte Carlo sweep over 5,000 random CSF criterion
+weightings (mirroring the conference paper's own robustness check) finds
+SHAP PLUS ties-or-beats plain SHAP's overall score in only ~50-52% of
+weightings on every dataset -- essentially a coin flip, not the >99%
+robustness the conference paper found for SHAP over LIME. Report this as
+what it is: SHAP PLUS achieves genuine parity with SHAP under equal
+weighting (not a decisive win), while adding a human-readable rule layer
+SHAP structurally cannot provide at all. Claiming SHAP PLUS "beats SHAP" in
+a journal submission would overstate this finding; claiming it "matches
+SHAP's regulatory profile while adding a validated readability layer" would
+not.
+
+**What this still does not establish.** No Anchors, counterfactual-method,
+or interpretable-by-design (EBM) baseline is included. C3b (human
+comprehensibility) has no automated proxy and is not scored -- the paper's
+core thesis (that the rendered rule is more readable than raw SHAP output)
+remains untested by anything in this repository and needs an actual human
+study before it can be claimed.
+
 ## Installation
 
 From this repository:
@@ -107,4 +181,5 @@ print(explanation.audit.to_dict())
 - Protected attributes may be logged for authorized fairness analysis, but must never be proposed as recourse.
 - The included recourse search is a constrained research baseline. Domain feasibility and causal validity need expert review.
 - A CSF score is an evaluation result, not a declaration of legal compliance.
-- Validate SHAP PLUS against SHAP, LIME, Anchors, a dedicated recourse method, and an interpretable-by-design model on Home Credit, HMEQ, and HMDA before making a superiority claim.
+- Validated against real SHAP and real LIME on four datasets (Home Credit, HMEQ, HMDA Vermont, and a fully held-out HMDA New Hampshire generalization check) with a proper tune/report split -- see "Empirical validation" above. Still missing before a superiority claim: Anchors, a dedicated recourse method, an interpretable-by-design model (EBM), and a human comprehension study.
+- No XAI method is "EU AI Act compliant" by itself -- compliance is an organizational/socio-technical property (retention policy, human oversight process, deployer monitoring under Art. 26), not a property of an explainer. What is defensible: this method's outputs are better suited to *support* Articles 13/14/26's technical requirements than SHAP-only or LIME-only.

@@ -99,8 +99,12 @@ def score_dataset(entry: dict) -> dict:
     return scored
 
 
-def main() -> None:
-    raw = json.loads((RESULTS_DIR / "benchmark_raw.json").read_text())
+def score_all(raw: dict) -> dict:
+    return {key: score_dataset(entry) for key, entry in raw.items()}
+
+
+def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json") -> None:
+    raw = json.loads((RESULTS_DIR / in_name).read_text())
     all_scored = {}
     for key, entry in raw.items():
         scored = score_dataset(entry)
@@ -149,10 +153,14 @@ def main() -> None:
             "flaw this benchmark exists to fix."
         )
 
-    out_path = RESULTS_DIR / "csf_scored.json"
+    out_path = RESULTS_DIR / out_name
     out_path.write_text(json.dumps(all_scored, indent=2, default=str))
     print(f"\nSaved scored CSF results to {out_path}")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "final":
+        main("final_benchmark_raw.json", "final_csf_scored.json")
+    else:
+        main()
