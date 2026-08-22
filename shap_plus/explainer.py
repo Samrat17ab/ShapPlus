@@ -171,7 +171,10 @@ class SHAPPlusExplainer:
         if num_features is None or num_features >= len(explanation.terms):
             return explanation
         terms = explanation.terms[: int(num_features)]
-        rule = self._render_rule(terms, explanation.prediction, explanation.decision)
+        rule = self._render_rule(
+            terms, explanation.prediction, explanation.decision,
+            fallback_used=explanation.fallback_used,
+        )
         complexity = structural_complexity([term.condition for term in terms])
         audit = replace(
             explanation.audit,
@@ -265,7 +268,17 @@ class SHAPPlusExplainer:
             fidelity < self.fidelity_threshold
             or sign_consistency < self.sign_consistency_threshold
         )
-        terms = self._build_tree_terms(row, shap_vector, selected_indices, path)
+        # Score what is actually shown: when the tree rule is unreliable
+        # enough to fall back, the user receives the raw top-K SHAP view,
+        # not the tree conditions -- so structural_complexity (C3a) is
+        # recomputed on THAT rendering, not the rejected tree rule's. The
+        # tree's own fidelity/sign_consistency stay as measured (they
+        # explain why fallback triggered; they are not what is displayed).
+        if fallback_used:
+            terms = self._build_raw_shap_terms(row, shap_vector, selected_indices)
+            complexity = structural_complexity([term.condition for term in terms])
+        else:
+            terms = self._build_tree_terms(row, shap_vector, selected_indices, path)
         decision = self._decision_label(prediction)
         rule = self._render_rule(terms, prediction, decision, fallback_used=fallback_used)
         total_abs = float(np.abs(shap_vector).sum())
@@ -562,6 +575,50 @@ class SHAPPlusExplainer:
         threshold = _format_number(step["threshold"])
         return f"{label} > {threshold}" if step["went_right"] else f"{label} <= {threshold}"
 
+    def _build_raw_shap_terms(
+        self,
+        row: pd.Series,
+        shap_vector: np.ndarray,
+        selected_indices: np.ndarray,
+    ) -> tuple[ExplanationTerm, ...]:
+        """
+        The fallback path: when the constrained local-tree rule doesn't clear
+        the fidelity/sign-consistency gate, don't hand the user a compressed
+        rule we don't trust -- fall back to the same deterministic, exact
+        top-K SHAP attribution the audit vector is already built from
+        (ranked by |contribution|, no surrogate approximation involved at
+        all). ``condition`` is a bare feature label with no threshold, on
+        the same basis structural_complexity() scores plain SHAP on
+        (Nc = 0, since there is no condition to parse) -- this fallback
+        should never score as more complex than plain SHAP itself, because
+        it IS plain SHAP's own top-K view for this instance.
+        """
+        order = sorted(
+            selected_indices.tolist(), key=lambda i: -abs(float(shap_vector[i]))
+        )
+        terms = []
+        for rank, index in enumerate(order, start=1):
+            feature = self.feature_names[index]
+            value = row[feature]
+            shap_value = float(shap_vector[index])
+            label = self.feature_display_names.get(feature, feature.replace("_", " ").title())
+            terms.append(
+                ExplanationTerm(
+                    feature=feature,
+                    value=_serializable(value),
+                    condition=label,
+                    shap_value=shap_value,
+                    surrogate_coefficient=0.0,
+                    direction=(
+                        "increases risk"
+                        if (shap_value > 0) == self.positive_class_is_adverse
+                        else "reduces risk"
+                    ),
+                    rank=rank,
+                )
+            )
+        return tuple(terms)
+
     def _build_tree_terms(
         self,
         row: pd.Series,
@@ -599,12 +656,18 @@ class SHAPPlusExplainer:
         decision: str,
         fallback_used: bool = False,
     ) -> str:
-        adverse = [
-            term.condition for term in terms if term.direction == "increases risk"
-        ]
-        supportive = [
-            term.condition for term in terms if term.direction == "reduces risk"
-        ]
+        # Fallback terms carry a bare feature label as `condition` (see
+        # _build_raw_shap_terms) so structural_complexity() scores them on
+        # the same basis as plain SHAP. For the human-facing sentence,
+        # append the signed contribution so the fallback rendering stays as
+        # informative as the tree-rule one, even without a threshold.
+        def label(term: ExplanationTerm) -> str:
+            if fallback_used:
+                return f"{term.condition} ({term.shap_value:+.3f})"
+            return term.condition
+
+        adverse = [label(term) for term in terms if term.direction == "increases risk"]
+        supportive = [label(term) for term in terms if term.direction == "reduces risk"]
         parts = []
         if adverse:
             parts.append(f"{'; '.join(adverse)} increased estimated default risk")
@@ -614,7 +677,10 @@ class SHAPPlusExplainer:
             parts.append("No selected feature had a material directional contribution")
         suffix = (
             " Direct TreeSHAP rendering was used because the constrained local "
-            "surrogate did not meet the fidelity gate."
+            "rule's fidelity to the model did not meet this system's own "
+            "reliability threshold for this instance; the figures above are "
+            "the model's exact, deterministic attributions, not an "
+            "approximation."
             if fallback_used
             else ""
         )

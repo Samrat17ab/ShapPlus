@@ -2,37 +2,37 @@ Using frozen hyperparameters (selected on tune pool, never touching report/holdo
 
 
 === home_credit ===
-  SHAP ... coverage=0.730 consistency=1.000 (0.7s)
-  LIME (stochastic) ... fidelity=0.265 consistency=0.387 (51.8s)
-  LIME (fixed-seed) ... consistency=1.000 exact=True (17.6s)
-  SHAP PLUS ... coverage=0.722 fidelity=0.813 consistency=1.000 fallback_rate=0.187 (41.6s)
-  C4 bias gap (CODE_GENDER): SHAP=0.2588258803706346 LIME=0.007643575200586912 SHAP_PLUS(full)=0.2588258803706346 SHAP_PLUS(visible)=0.0902656382543712
+  SHAP ... coverage=0.730 consistency=1.000 (1.5s)
+  LIME (stochastic) ... fidelity=0.269 consistency=0.368 (60.8s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (27.9s)
+  SHAP PLUS ... coverage=0.722 fidelity=0.813 consistency=1.000 fallback_rate=0.187 (69.1s)
+  C4 bias gap (CODE_GENDER): SHAP=0.2588258803706346 LIME=0.00968648477371704 SHAP_PLUS(full)=0.2588258803706346 SHAP_PLUS(visible)=0.1311441673308973
   C5 approval-rate disparity (CODE_GENDER): 0.2439
-  dataset total: 111.7s
+  dataset total: 159.4s
 
 === hmeq ===
   SHAP ... coverage=0.985 consistency=1.000 (1.3s)
-  LIME (stochastic) ... fidelity=0.260 consistency=0.765 (6.2s)
-  LIME (fixed-seed) ... consistency=1.000 exact=True (1.7s)
-  SHAP PLUS ... coverage=0.981 fidelity=0.770 consistency=1.000 fallback_rate=0.347 (42.7s)
-  dataset total: 51.9s
+  LIME (stochastic) ... fidelity=0.257 consistency=0.745 (8.8s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (2.3s)
+  SHAP PLUS ... coverage=0.981 fidelity=0.770 consistency=1.000 fallback_rate=0.347 (59.3s)
+  dataset total: 71.7s
 
 === hmda_vt ===
-  SHAP ... coverage=0.980 consistency=1.000 (0.3s)
-  LIME (stochastic) ... fidelity=0.283 consistency=0.590 (3.9s)
+  SHAP ... coverage=0.980 consistency=1.000 (0.5s)
+  LIME (stochastic) ... fidelity=0.284 consistency=0.628 (4.9s)
   LIME (fixed-seed) ... consistency=1.000 exact=True (1.2s)
-  SHAP PLUS ... coverage=0.979 fidelity=0.870 consistency=1.000 fallback_rate=0.100 (31.0s)
-  C4 bias gap (derived_sex): SHAP=0.11110817483804668 LIME=0.022013792983086124 SHAP_PLUS(full)=0.11110817483804668 SHAP_PLUS(visible)=0.023626397131267664
+  SHAP PLUS ... coverage=0.979 fidelity=0.870 consistency=1.000 fallback_rate=0.100 (41.7s)
+  C4 bias gap (derived_sex): SHAP=0.11110817483804668 LIME=0.020824124300891495 SHAP_PLUS(full)=0.11110817483804668 SHAP_PLUS(visible)=0.022161500527200294
   C5 approval-rate disparity (derived_sex): 0.2365
-  dataset total: 36.4s
+  dataset total: 48.3s
 
 === hmda_nh ===
-  SHAP ... coverage=0.971 consistency=1.000 (0.5s)
-  LIME (stochastic) ... fidelity=0.269 consistency=0.585 (4.8s)
-  LIME (fixed-seed) ... consistency=1.000 exact=True (1.1s)
-  SHAP PLUS ... coverage=0.969 fidelity=0.857 consistency=1.000 fallback_rate=0.113 (28.2s)
-  C4 bias gap (derived_sex): SHAP=0.21186159068314558 LIME=0.03737099697189453 SHAP_PLUS(full)=0.21186159068314558 SHAP_PLUS(visible)=0.03218651938647585
+  SHAP ... coverage=0.971 consistency=1.000 (1.1s)
+  LIME (stochastic) ... fidelity=0.270 consistency=0.566 (5.4s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (1.5s)
+  SHAP PLUS ... coverage=0.969 fidelity=0.857 consistency=1.000 fallback_rate=0.113 (46.0s)
+  C4 bias gap (derived_sex): SHAP=0.21186159068314558 LIME=0.03934714060394086 SHAP_PLUS(full)=0.21186159068314558 SHAP_PLUS(visible)=0.05540522006915699
   C5 approval-rate disparity (derived_sex): 0.3503
-  dataset total: 34.6s
+  dataset total: 54.0s
 
 Saved final benchmark to C:\Users\samla\Documents\Samrat Lamsal\research\results\final_benchmark_raw.json
