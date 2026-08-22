@@ -117,22 +117,47 @@ def main() -> None:
             f"mean_score={result['mean_score']:.3f}  ({time.time()-t0:.0f}s elapsed)"
         )
 
-    # min_score/mean_score are coarse (discretized into 1-5 CSF tiers), so
-    # ties are common and previously broke arbitrarily -- toward whichever
-    # config happened to appear first in the combos list, which is not a
-    # meaningful preference. mean_fidelity (continuous, not tiered) breaks
-    # ties in favor of the config that is genuinely better, not earlier.
-    best = max(log, key=lambda r: (r["min_score"], r["mean_score"], r["mean_fidelity"]))
+    # Selection criterion, revised: ranking primarily by the coarse worst-case
+    # TIER score (min_score) turned out to reward configs that trade away
+    # real fidelity for a marginal complexity improvement that only matters
+    # because it happens to cross a tier boundary. Concretely: the
+    # objective_weights=(0.55,0.15,0.1,0.2) family gives HIGHER real fidelity
+    # on every single tune-pool dataset (Home Credit 0.815 vs 0.743, HMEQ
+    # 0.766 vs 0.650, HMDA VT 0.874 vs 0.799) than the config the old
+    # min_score-first ranking picked -- it only loses on min_score because
+    # Home Credit's complexity (0.60) lands one coarse tier below (0.55)'s
+    # tier instead of at it, a boundary artifact, not a real quality
+    # difference. A config that is worse everywhere in the metric that
+    # actually matters (fidelity) but wins on a single tier-rounding
+    # accident is not "safer" or "less biased" -- it is worse, and picking
+    # it anyway just because it scores better after rounding is exactly the
+    # kind of proxy-metric overfitting this project has spent several
+    # revisions removing elsewhere (see score_csf.py's C6 history).
+    #
+    # New criterion: qualify every config whose worst-case tier score clears
+    # a basic floor (>=3.0 -- "acceptable" on every tune dataset, ruling out
+    # genuinely degenerate configs), then rank the QUALIFIED set by mean
+    # fidelity (continuous, the metric surrogate quality is actually about),
+    # tie-broken by the coarse min_score for extra robustness. This keeps
+    # the original protection against a config that fails badly on any one
+    # dataset, while no longer letting a single tier-boundary crossing veto
+    # a config that is genuinely, measurably better everywhere else.
+    QUALIFYING_MIN_SCORE = 3.0
+    qualified = [r for r in log if r["min_score"] >= QUALIFYING_MIN_SCORE]
+    pool = qualified if qualified else log
+    best = max(pool, key=lambda r: (r["mean_fidelity"], r["min_score"], r["mean_score"]))
     print(f"\nSelected: {best['hyperparams']}")
+    print(f"  qualified configs (min_score >= {QUALIFYING_MIN_SCORE}): {len(qualified)}/{len(log)}")
+    print(f"  mean fidelity (primary criterion): {best['mean_fidelity']:.3f}")
     print(f"  worst-case (min) dataset score: {best['min_score']:.3f}")
     print(f"  mean dataset score: {best['mean_score']:.3f}")
-    print(f"  mean fidelity (tie-break): {best['mean_fidelity']:.3f}")
     for key, v in best["per_dataset"].items():
         print(f"    {key:12s} coverage={v['coverage']:.3f} fidelity={v['fidelity']:.3f} complexity={v['complexity']:.3f} score={v['score']:.3f}")
 
     output = {
         "selected_hyperparams": best["hyperparams"],
-        "selection_criterion": "max(min_score across dev datasets, then mean_score, then mean_fidelity as a tie-break) on TUNE pool only",
+        "selection_criterion": f"max(mean_fidelity, then min_score, then mean_score) among configs with min_score >= {QUALIFYING_MIN_SCORE} on TUNE pool only",
+        "qualifying_min_score": QUALIFYING_MIN_SCORE,
         "tune_pool_size_per_dataset": TUNE_N,
         "tune_seed": SEED,
         "full_grid_log": log,

@@ -1,15 +1,16 @@
 {
   "selected_hyperparams": {
-    "min_leaf_weight_fraction": 0.006,
-    "quantile_grid_size": 19,
+    "min_leaf_weight_fraction": 0.0015,
+    "quantile_grid_size": 39,
     "objective_weights": [
-      0.4,
+      0.55,
+      0.15,
       0.1,
-      0.3,
       0.2
     ]
   },
-  "selection_criterion": "max(min_score across dev datasets, then mean_score, then mean_fidelity as a tie-break) on TUNE pool only",
+  "selection_criterion": "max(mean_fidelity, then min_score, then mean_score) among configs with min_score >= 3.0 on TUNE pool only",
+  "qualifying_min_score": 3.0,
   "tune_pool_size_per_dataset": 40,
   "tune_seed": 20260821,
   "full_grid_log": [

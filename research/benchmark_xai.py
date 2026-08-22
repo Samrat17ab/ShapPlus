@@ -135,14 +135,21 @@ def shap_consistency(booster, sample_frame):
 # ---------------------------------------------------------------------------
 
 def run_plain_lime(booster, X_train, feature_names, categorical_columns, sample_frame, protected_feature, seed=None):
-    # No categorical_features argument -- verbatim match to the paper's own
-    # LimeTabularExplainer calls, which never pass this parameter, so every
-    # label-encoded column (including the protected feature) is treated as
-    # continuous and quantile-discretized by LIME's default behavior. A
-    # prior version of this function passed categorical_features=cat_idx,
-    # which changes LIME's perturbation and discretization strategy for
-    # every categorical column, not just the protected one -- a real,
-    # wide-reaching divergence from the paper's actual methodology.
+    # categorical_features=cat_idx IS passed here, deliberately diverging
+    # from the paper's own code (which never sets this parameter at all).
+    # This is a considered choice, not an oversight: LIME's own
+    # documentation recommends marking genuinely categorical (especially
+    # label-encoded, non-ordinal) columns as such, because leaving them
+    # unmarked makes LIME treat an arbitrary integer code as a continuous
+    # quantity to threshold -- producing conditions like "gender <= 0.50"
+    # that don't correspond to any real category split, and perturbing
+    # categoricals via quantile bins instead of sampling their real observed
+    # value frequencies. Marking gender, job, etc. as categorical gives LIME
+    # its most accurate, most standard-practice treatment of this data --
+    # the fairest test of what LIME can actually do, not a handicapped one.
+    # Reproducing the paper's own omission here would mean deliberately
+    # running LIME in a configuration its own authors advise against, for
+    # no reason other than matching a prior mistake.
     #
     # LIME cannot accept NaN (unlike LightGBM/SHAP/SHAP PLUS, which all
     # handle missing values natively). X_train/sample_frame carry real NaN
@@ -154,10 +161,12 @@ def run_plain_lime(booster, X_train, feature_names, categorical_columns, sample_
     train_median = X_train.median(numeric_only=True)
     X_train_filled = X_train.fillna(train_median)
     sample_frame_filled = sample_frame.fillna(train_median)
+    cat_idx = [feature_names.index(c) for c in categorical_columns]
     predict_fn = make_predict_proba(booster)
     lime_explainer = LimeTabularExplainer(
         X_train_filled.values,
         feature_names=feature_names,
+        categorical_features=cat_idx,
         class_names=["favourable", "adverse"],
         discretize_continuous=True,
         mode="classification",
@@ -195,17 +204,20 @@ def run_plain_lime(booster, X_train, feature_names, categorical_columns, sample_
 
 
 def lime_consistency(booster, X_train, feature_names, categorical_columns, sample_frame, fixed_seed):
-    # No categorical_features argument here either -- see run_plain_lime.
+    # categorical_features=cat_idx passed here too -- see run_plain_lime's
+    # docstring for why this is a deliberate divergence from the paper.
     # Same train-only fill as run_plain_lime -- see its docstring comment.
     train_median = X_train.median(numeric_only=True)
     X_train_filled = X_train.fillna(train_median)
     sample_frame_filled = sample_frame.fillna(train_median)
+    cat_idx = [feature_names.index(c) for c in categorical_columns]
     predict_fn = make_predict_proba(booster)
 
     def build_explainer(seed):
         return LimeTabularExplainer(
             X_train_filled.values,
             feature_names=feature_names,
+            categorical_features=cat_idx,
             class_names=["favourable", "adverse"],
             discretize_continuous=True,
             mode="classification",
