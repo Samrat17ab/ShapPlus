@@ -4,48 +4,51 @@
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
       "mean_a": 0.7936918052761907,
-      "mean_b": 0.2407619592855778,
-      "mean_diff": 0.5529298459906127,
-      "ci95_low": 0.5321126035036189,
-      "ci95_high": 0.5729460680745767,
+      "mean_b": 0.24075661275273424,
+      "mean_diff": 0.5529351925234564,
+      "ci95_low": 0.5316935613813774,
+      "ci95_high": 0.5734833897126668,
       "wilcoxon_statistic": 0.0,
       "p_value": 2.2996057560669792e-26,
-      "cohens_d_paired": 4.340808084304505,
+      "cohens_d_paired": 4.243685551647578,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
       "mean_a": 0.5545444444444445,
-      "mean_b": 1.0328266666666668,
-      "mean_diff": -0.4782822222222222,
-      "ci95_low": -0.4904593055555556,
-      "ci95_high": -0.4668632777777778,
+      "mean_b": 1.0318333333333336,
+      "mean_diff": -0.4772888888888889,
+      "ci95_low": -0.4892281666666668,
+      "ci95_high": -0.4658414722222222,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.2933349518723643e-26,
-      "cohens_d_paired": -6.556055257051045,
+      "p_value": 2.293449863743624e-26,
+      "cohens_d_paired": -6.602478673377969,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
-      "including_c6_checklist": {
+      "including_qualitative": {
         "criteria_used": [
           "C1",
           "C2",
           "C3a",
+          "C3b",
           "C4",
+          "C5",
           "C6",
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.339,
-        "shap_plus_strictly_beats_shap_fraction": 0.339
+        "shap_plus_ties_or_beats_shap_fraction": 0.778,
+        "shap_plus_strictly_beats_shap_fraction": 0.778
       },
-      "quantitative_only_excluding_c6": {
+      "quantitative_only": {
         "criteria_used": [
           "C1",
           "C2",
           "C3a",
           "C4",
+          "C5",
           "C7"
         ],
         "n_draws": 5000,
@@ -59,42 +62,43 @@
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
       "mean_a": 0.7574230070549779,
-      "mean_b": 0.23316805687823594,
-      "mean_diff": 0.5242549501767421,
-      "ci95_low": 0.5002035225173158,
-      "ci95_high": 0.5475695777272831,
+      "mean_b": 0.2360720085998604,
+      "mean_diff": 0.5213509984551176,
+      "ci95_low": 0.49605980053169146,
+      "ci95_high": 0.5447785011134655,
       "wilcoxon_statistic": 0.0,
       "p_value": 2.2996057560669792e-26,
-      "cohens_d_paired": 3.5072338175164135,
+      "cohens_d_paired": 3.41707907095602,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
       "mean_a": 0.47198111111111113,
-      "mean_b": 0.9589666666666666,
-      "mean_diff": -0.4869855555555555,
-      "ci95_low": -0.4989217222222222,
-      "ci95_high": -0.4759266111111112,
+      "mean_b": 0.9584199999999998,
+      "mean_diff": -0.4864388888888889,
+      "ci95_low": -0.4984600277777778,
+      "ci95_high": -0.4755898333333335,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.2927030358908012e-26,
-      "cohens_d_paired": -6.802107505399684,
+      "p_value": 2.2925307243328646e-26,
+      "cohens_d_paired": -6.761653671553026,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
-      "including_c6_checklist": {
+      "including_qualitative": {
         "criteria_used": [
           "C1",
           "C2",
           "C3a",
+          "C3b",
           "C6",
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.3412,
-        "shap_plus_strictly_beats_shap_fraction": 0.3412
+        "shap_plus_ties_or_beats_shap_fraction": 0.7688,
+        "shap_plus_strictly_beats_shap_fraction": 0.7688
       },
-      "quantitative_only_excluding_c6": {
+      "quantitative_only": {
         "criteria_used": [
           "C1",
           "C2",
@@ -112,48 +116,51 @@
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
       "mean_a": 0.803182131674591,
-      "mean_b": 0.28600282899934215,
-      "mean_diff": 0.5171793026752488,
-      "ci95_low": 0.47825794446636716,
-      "ci95_high": 0.5553650288628276,
-      "wilcoxon_statistic": 2.0,
-      "p_value": 2.3939507369660054e-26,
-      "cohens_d_paired": 2.11865006741768,
+      "mean_b": 0.2876897796165012,
+      "mean_diff": 0.5154923520580897,
+      "ci95_low": 0.4769446189515897,
+      "ci95_high": 0.5541791422161395,
+      "wilcoxon_statistic": 7.0,
+      "p_value": 2.6469347492701727e-26,
+      "cohens_d_paired": 2.102641108130261,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
       "mean_a": 0.5094755555555556,
-      "mean_b": 1.0264733333333333,
-      "mean_diff": -0.5169977777777778,
-      "ci95_low": -0.5315102500000002,
-      "ci95_high": -0.5031176388888889,
+      "mean_b": 1.0261533333333333,
+      "mean_diff": -0.5166777777777778,
+      "ci95_low": -0.5312837777777779,
+      "ci95_high": -0.5028486666666667,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.2986842359745088e-26,
-      "cohens_d_paired": -5.75587390596604,
+      "p_value": 2.2985690710227698e-26,
+      "cohens_d_paired": -5.732308392933466,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
-      "including_c6_checklist": {
+      "including_qualitative": {
         "criteria_used": [
           "C1",
           "C2",
           "C3a",
+          "C3b",
           "C4",
+          "C5",
           "C6",
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.3292,
-        "shap_plus_strictly_beats_shap_fraction": 0.3292
+        "shap_plus_ties_or_beats_shap_fraction": 0.7798,
+        "shap_plus_strictly_beats_shap_fraction": 0.7798
       },
-      "quantitative_only_excluding_c6": {
+      "quantitative_only": {
         "criteria_used": [
           "C1",
           "C2",
           "C3a",
           "C4",
+          "C5",
           "C7"
         ],
         "n_draws": 5000,
@@ -167,48 +174,51 @@
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
       "mean_a": 0.7927586435416539,
-      "mean_b": 0.27253841590664746,
-      "mean_diff": 0.5202202276350062,
-      "ci95_low": 0.4825970636715751,
-      "ci95_high": 0.555592785754278,
-      "wilcoxon_statistic": 10.0,
-      "p_value": 2.811265480854799e-26,
-      "cohens_d_paired": 2.2895597465656463,
+      "mean_b": 0.2746571870926184,
+      "mean_diff": 0.5181014564490355,
+      "ci95_low": 0.48021096105749006,
+      "ci95_high": 0.5530868549088788,
+      "wilcoxon_statistic": 9.0,
+      "p_value": 2.755394799578309e-26,
+      "cohens_d_paired": 2.2892407488142172,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
       "mean_a": 0.49533444444444447,
-      "mean_b": 1.0240200000000002,
-      "mean_diff": -0.5286855555555557,
-      "ci95_low": -0.5420403611111112,
-      "ci95_high": -0.5153388611111113,
+      "mean_b": 1.0218733333333334,
+      "mean_diff": -0.5265388888888889,
+      "ci95_low": -0.5398490555555556,
+      "ci95_high": -0.5130709166666667,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.2986266528026092e-26,
-      "cohens_d_paired": -6.270066175543593,
+      "p_value": 2.2986842359745088e-26,
+      "cohens_d_paired": -6.265987139748483,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
-      "including_c6_checklist": {
+      "including_qualitative": {
         "criteria_used": [
           "C1",
           "C2",
           "C3a",
+          "C3b",
           "C4",
+          "C5",
           "C6",
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.3292,
-        "shap_plus_strictly_beats_shap_fraction": 0.3292
+        "shap_plus_ties_or_beats_shap_fraction": 0.7798,
+        "shap_plus_strictly_beats_shap_fraction": 0.7798
       },
-      "quantitative_only_excluding_c6": {
+      "quantitative_only": {
         "criteria_used": [
           "C1",
           "C2",
           "C3a",
           "C4",
+          "C5",
           "C7"
         ],
         "n_draws": 5000,

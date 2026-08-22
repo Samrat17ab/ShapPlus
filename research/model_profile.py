@@ -122,6 +122,25 @@ def profile_dataset(key: str) -> dict:
         result["visible_rule_presence_rate"] = float(np.mean(vis_present))
         result["audit_vector_group_means"] = full_group_means
         result["audit_vector_gap"] = float(max(full_group_means.values()) - min(full_group_means.values()))
+
+        # C5 (Fairness Transparency): approval-rate disparity across the
+        # protected feature's groups, from the model's own predictions --
+        # a property of the LightGBM model, not of the XAI method, exactly
+        # as the paper's own C5 caveat says. Computed here from real
+        # decisions, not skipped.
+        preds_arr = np.asarray(predictions)
+        favourable = (
+            preds_arr < explainer.decision_threshold
+            if explainer.positive_class_is_adverse
+            else preds_arr >= explainer.decision_threshold
+        )
+        approval_rates = {
+            str(g): float(favourable[(groups == g).to_numpy()].mean())
+            for g in groups.unique()
+            if (groups == g).sum() > 0
+        }
+        result["approval_rates"] = approval_rates
+        result["approval_rate_disparity"] = float(max(approval_rates.values()) - min(approval_rates.values()))
     if recourse_achieved:
         result["recourse_achieved_rate"] = float(np.mean(recourse_achieved))
         if recourse_cost:

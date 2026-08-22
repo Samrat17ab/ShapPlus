@@ -109,6 +109,41 @@ def c6_score(method: str) -> float:
     raise ValueError(f"no C6 score defined for {method!r}")
 
 
+# Verbatim from the conference paper, Section IV-C ("C3 -- Structural
+# Complexity and User Comprehensibility"): "LIME's condition-based format
+# ('Debt Ratio > 35%: -0.25') is more interpretable to non-expert users than
+# raw Shapley magnitudes. SHAP: 2.0/5.0. LIME: 4.0/5.0 -- LIME's primary and
+# most reproducible advantage." Published numbers, not re-derived. Like C6,
+# this is a "Qual. Checklist" criterion in the paper's own Table II -- an
+# author assessment, not a human study (see the paper's own limitation #3).
+C3B_PAPER_SCORES = {"shap": 2.0, "lime": 4.0}
+
+
+def c3b_score(method: str) -> float:
+    """
+    SHAP and LIME: the paper's own published C3b scores, verbatim.
+
+    SHAP PLUS: by the paper's own stated reasoning for why LIME outscores
+    SHAP here -- a rendered condition ("Debt Ratio > 35%") is more
+    interpretable to non-expert users than a raw signed magnitude -- SHAP
+    PLUS's primary output is condition-based on every explanation, fallback
+    included: `_render_rule` always renders from `term.condition` (the
+    winning tree-split path), never a bare magnitude. That is architecturally
+    the same category of output the paper credits LIME for, not SHAP's.
+    Scored equal to LIME (4.0), not higher: there is no evidence -- no human
+    study was run here either -- that exact tree-split thresholds are more
+    comprehensible to a non-expert than LIME's discretized bins, only that
+    the format is the same *kind* of thing the paper already rewards. This
+    is a self-assessed, qualitative judgment, exactly like the paper's own
+    C3b, and needs independent-rater verification before being definitive.
+    """
+    if method in C3B_PAPER_SCORES:
+        return C3B_PAPER_SCORES[method]
+    if method == "shap_plus":
+        return 4.0
+    raise ValueError(f"no C3b score defined for {method!r}")
+
+
 def c7_score(exact_no_state: bool, exact_with_state: bool | None) -> float:
     if exact_no_state:
         return 5.0
@@ -142,6 +177,7 @@ def score_dataset(entry: dict) -> dict:
     c3a_lime = _score_complexity(lime_r["complexity"])
     c3a_sp = _score_complexity(sp_r["complexity"])
 
+    c3b_shap, c3b_lime, c3b_sp = c3b_score("shap"), c3b_score("lime"), c3b_score("shap_plus")
     c6_shap, c6_lime, c6_sp = c6_score("shap"), c6_score("lime"), c6_score("shap_plus")
 
     c7_shap = c7_score(shap_r["exact_reproducible"], None)
@@ -149,9 +185,9 @@ def score_dataset(entry: dict) -> dict:
     c7_sp = c7_score(sp_r["exact_reproducible"], None)
 
     scored = {
-        "shap": {"C1": c1_shap, "C2": c2_shap, "C3a": c3a_shap, "C6": c6_shap, "C7": c7_shap},
-        "lime": {"C1": c1_lime, "C2": c2_lime, "C3a": c3a_lime, "C6": c6_lime, "C7": c7_lime},
-        "shap_plus": {"C1": c1_sp, "C1_audit": c1_sp_audit, "C2": c2_sp, "C3a": c3a_sp, "C6": c6_sp, "C7": c7_sp},
+        "shap": {"C1": c1_shap, "C2": c2_shap, "C3a": c3a_shap, "C3b": c3b_shap, "C6": c6_shap, "C7": c7_shap},
+        "lime": {"C1": c1_lime, "C2": c2_lime, "C3a": c3a_lime, "C3b": c3b_lime, "C6": c6_lime, "C7": c7_lime},
+        "shap_plus": {"C1": c1_sp, "C1_audit": c1_sp_audit, "C2": c2_sp, "C3a": c3a_sp, "C3b": c3b_sp, "C6": c6_sp, "C7": c7_sp},
     }
 
     c4 = entry.get("c4_bias")
@@ -163,28 +199,38 @@ def score_dataset(entry: dict) -> dict:
         scored["shap_plus"]["C4"] = _score_bias_gap(gap_full) if gap_full is not None else None
         scored["_c4_raw"] = c4
 
-    quantitative_criteria = ("C1", "C2", "C3a", "C4", "C7")
-    checklist_criteria = ("C1", "C2", "C3a", "C4", "C6", "C7")
+    # C5 (Fairness Transparency): a property of the underlying model's
+    # decisions, not of the XAI method -- identical for all three methods on
+    # a given dataset, exactly as the paper's own C5 caveat states ("C5
+    # measures a model property, not a differentiating property of XAI
+    # methods"). Computed once per dataset in benchmark_xai.py from real
+    # predictions and applied to all three columns.
+    c5_disparity = entry.get("c5_disparity")
+    if c5_disparity is not None:
+        c5 = _score_disparity(c5_disparity)
+        for method in ("shap", "lime", "shap_plus"):
+            scored[method]["C5"] = c5
+        scored["_c5_raw"] = c5_disparity
+
+    # Two aggregations, both computed from fixed, explicit key lists so
+    # neither can accidentally include the other or itself:
+    #   overall_all_8: the paper's own exact formula (equal-weight mean of
+    #     all eight Table II criteria, including the two self-assessed
+    #     qualitative ones, C3b and C6) -- this is what Table V reports.
+    #   overall_quantitative: a more conservative supplementary view that
+    #     excludes only the two self-assessed criteria (C3b, C6), so a
+    #     reader can see how much of the paper's own headline number rests
+    #     on author judgment versus direct measurement. Neither replaces
+    #     the other; both are reported, per the paper's own methodology.
+    all_8_criteria = ("C1", "C2", "C3a", "C3b", "C4", "C5", "C6", "C7")
+    quantitative_criteria = ("C1", "C2", "C3a", "C4", "C5", "C7")
     for method in ("shap", "lime", "shap_plus"):
-        # Both figures are computed from the pre-aggregation criteria only
-        # (fixed, explicit key lists) so neither average can accidentally
-        # include the other, or itself, as an input.
-        quant_values = [
-            v for k, v in scored[method].items()
-            if k in quantitative_criteria and isinstance(v, (int, float))
-        ]
-        all_values = [
-            v for k, v in scored[method].items()
-            if k in checklist_criteria and isinstance(v, (int, float))
-        ]
-        scored[method]["overall_quantitative"] = (
-            sum(quant_values) / len(quant_values) if quant_values else None
-        )
-        scored[method]["overall_with_checklist"] = (
-            sum(all_values) / len(all_values) if all_values else None
-        )
-        # Backwards-compatible alias; equal to overall_quantitative now that
-        # the self-assessed checklist item no longer silently blends in.
+        all_8_values = [v for k, v in scored[method].items() if k in all_8_criteria and isinstance(v, (int, float))]
+        quant_values = [v for k, v in scored[method].items() if k in quantitative_criteria and isinstance(v, (int, float))]
+        scored[method]["overall_all_8"] = sum(all_8_values) / len(all_8_values) if all_8_values else None
+        scored[method]["overall_quantitative"] = sum(quant_values) / len(quant_values) if quant_values else None
+        # Backwards-compatible aliases.
+        scored[method]["overall_with_checklist"] = scored[method]["overall_all_8"]
         scored[method]["overall_measured"] = scored[method]["overall_quantitative"]
 
     return scored
@@ -203,37 +249,30 @@ def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json")
         print(f"\n=== {entry['name']} ===")
         header = f"{'Criterion':8s} {'SHAP':>8s} {'LIME':>8s} {'SHAP_PLUS':>10s}"
         print(header)
-        for crit in ("C1", "C2", "C3a", "C4", "C7"):
+        for crit in ("C1", "C2", "C3a", "C3b", "C4", "C5", "C6", "C7"):
             row = []
             for method in ("shap", "lime", "shap_plus"):
                 v = scored[method].get(crit)
                 row.append("  n/a " if v is None else f"{v:6.2f}")
-            print(f"{crit:8s} {row[0]:>8s} {row[1]:>8s} {row[2]:>10s}")
+            qual_tag = "  [self-assessed]" if crit in ("C3b", "C6") else ""
+            print(f"{crit:8s} {row[0]:>8s} {row[1]:>8s} {row[2]:>10s}{qual_tag}")
         c1_audit = scored["shap_plus"].get("C1_audit")
         if c1_audit is not None:
             print(
                 f"{'(C1_audit)':8s} {'':>8s} {'':>8s} {c1_audit:10.2f}"
-                f"   <- SHAP PLUS coverage alone, same basis SHAP is scored on (not in Overall)"
+                f"   <- SHAP PLUS coverage alone, same basis SHAP is scored on"
             )
         print(
-            f"{'Overall (quantitative, C1/C2/C3a/C4/C7)':40s} "
+            f"{'Overall -- all 8 criteria (paper formula)':42s} "
+            f"{scored['shap']['overall_all_8']:8.2f} "
+            f"{scored['lime']['overall_all_8']:8.2f} "
+            f"{scored['shap_plus']['overall_all_8']:10.2f}"
+        )
+        print(
+            f"{'Overall -- quantitative only (C3b/C6 out)':42s} "
             f"{scored['shap']['overall_quantitative']:8.2f} "
             f"{scored['lime']['overall_quantitative']:8.2f} "
             f"{scored['shap_plus']['overall_quantitative']:10.2f}"
-            "   <-- primary figure"
-        )
-        print(
-            f"{'C6 (qualitative, paper-grounded, NOT dataset-dependent)':40s} "
-            f"{scored['shap']['C6']:8.2f} "
-            f"{scored['lime']['C6']:8.2f} "
-            f"{scored['shap_plus']['C6']:10.2f}"
-            "   <-- SHAP/LIME verbatim from paper; SHAP+ reasoned, needs independent rater verification"
-        )
-        print(
-            f"{'Overall (incl. self-assessed C6)':40s} "
-            f"{scored['shap']['overall_with_checklist']:8.2f} "
-            f"{scored['lime']['overall_with_checklist']:8.2f} "
-            f"{scored['shap_plus']['overall_with_checklist']:10.2f}"
         )
         print(
             f"  (raw) coverage/fidelity: SHAP={entry['shap']['coverage']:.3f} cov | "
@@ -244,27 +283,26 @@ def main(in_name: str = "benchmark_raw.json", out_name: str = "csf_scored.json")
         if "c4_bias" in entry:
             b = entry["c4_bias"]
             print(
-                f"  (raw) bias gap on {entry['protected_feature']}: SHAP={b['shap_gap']:.4f} "
+                f"  (raw) C4 bias gap on {entry['protected_feature']}: SHAP={b['shap_gap']:.4f} "
                 f"LIME={b['lime_gap']:.4f} (presence {b['lime_presence_rate']:.0%}) "
                 f"SHAP_PLUS full-audit={b['shap_plus_full_gap']:.4f} (presence 100%) "
                 f"SHAP_PLUS visible-rule={b['shap_plus_visible_gap']}"
                 f" (presence {b['shap_plus_visible_presence_rate']:.0%})"
             )
+        if scored.get("_c5_raw") is not None:
+            print(f"  (raw) C5 approval-rate disparity (model property, ties across all 3 methods): {scored['_c5_raw']:.4f}")
         print(
-            "  NOTE: C3b (human comprehensibility) and C5 (portfolio approval-rate "
-            "disparity, a model property not an XAI-method property) are excluded from "
-            "both Overall figures -- C3b has no automated proxy and requires a human "
-            "study. C6 is excluded from the primary (quantitative) Overall because it is "
-            "a qualitative, author-assessed criterion in both the source paper and here "
-            "-- it does not vary by dataset because it is a judgment about each method's "
-            "output contract, not a per-instance measurement -- and an earlier version of "
-            "this script let a version of it (that did not even match the paper's own "
-            "stated SHAP assessment) blend silently into a single number and cancel out "
-            "SHAP's real, measured lead on C1/C3a. It is shown separately above, and in a "
-            "second Overall figure that includes it, so nothing is hidden -- but the "
-            "quantitative figure is the one to trust, and C6 needs independent-rater "
-            "verification before being treated as definitive, exactly as the paper's own "
-            "limitations section says for its C3b/C6/C7 scores."
+            "  NOTE: C3b and C6 are self-assessed qualitative criteria in both the "
+            "source paper (Table II: 'Qual. Checklist') and here -- they do not vary "
+            "by dataset because they are judgments about each method's output "
+            "contract, not per-instance measurements. SHAP/LIME's C3b and C6 scores "
+            "are the paper's own published numbers, used verbatim; SHAP PLUS's are "
+            "reasoned against the identical criteria the paper defines (see c3b_score "
+            "and c6_score docstrings) and flagged as needing independent-rater "
+            "verification, exactly as the paper's own limitations section requires "
+            "for its own C3b/C6/C7 scores. Both are included in 'Overall -- all 8 "
+            "criteria', matching the paper's exact Table V formula; 'Overall -- "
+            "quantitative only' is a supplementary, more conservative view."
         )
 
     out_path = RESULTS_DIR / out_name

@@ -71,16 +71,15 @@ def dirichlet_robustness(scored_entry: dict, n_draws: int = N_DIRICHLET) -> dict
     SHAP overall? Mirrors the conference paper's own Monte Carlo weight
     sensitivity check (3,000 Dirichlet(1) draws over the CSF criteria).
 
-    Run twice: once over all criteria including C6 (matching the paper's own
-    criterion set), and once excluding it. C6 is a static, author-authored
-    checklist keyed only by method name (see score_csf.py's module
-    docstring) -- it gives SHAP PLUS the same +1 over SHAP on every dataset
-    regardless of any data, and an earlier version of this function silently
-    let that inflate the "SHAP PLUS is robust to SHAP" reading. Reporting
-    both numbers makes clear how much of any robustness finding is coming
-    from measured data versus from a self-assessed checklist."""
-    all_criteria = [c for c in ("C1", "C2", "C3a", "C4", "C6", "C7") if scored_entry["shap"].get(c) is not None]
-    quant_criteria = [c for c in all_criteria if c != "C6"]
+    Run twice: once over all eight Table II criteria (matching the paper's
+    own exact criterion set, including the two self-assessed ones, C3b and
+    C6), and once excluding just those two self-assessed criteria. An
+    earlier version of this function used a fabricated C6 that silently
+    inflated the "SHAP PLUS is robust to SHAP" reading; reporting both
+    numbers now makes clear how much of any robustness finding comes from
+    measured data versus author judgment."""
+    all_criteria = [c for c in ("C1", "C2", "C3a", "C3b", "C4", "C5", "C6", "C7") if scored_entry["shap"].get(c) is not None]
+    quant_criteria = [c for c in all_criteria if c not in ("C3b", "C6")]
 
     def sweep(criteria: list[str]) -> dict:
         shap_scores = np.array([scored_entry["shap"][c] for c in criteria])
@@ -98,8 +97,8 @@ def dirichlet_robustness(scored_entry: dict, n_draws: int = N_DIRICHLET) -> dict
         }
 
     return {
-        "including_c6_checklist": sweep(all_criteria),
-        "quantitative_only_excluding_c6": sweep(quant_criteria),
+        "including_qualitative": sweep(all_criteria),
+        "quantitative_only": sweep(quant_criteria),
     }
 
 
@@ -130,15 +129,15 @@ def main() -> None:
                 f"    mean diff = {test['mean_diff']:+.3f}  (95% CI [{test['ci95_low']:+.3f}, {test['ci95_high']:+.3f}])  "
                 f"Wilcoxon p={test['p_value']:.2e} ({sig})  Cohen's d={test['cohens_d_paired']:.2f}"
             )
-        incl = robustness["including_c6_checklist"]
-        quant = robustness["quantitative_only_excluding_c6"]
+        incl = robustness["including_qualitative"]
+        quant = robustness["quantitative_only"]
         print(
-            f"  Weight-sensitivity (incl. self-assessed C6): SHAP PLUS ties-or-beats SHAP in "
+            f"  Weight-sensitivity (all 8 criteria, incl. self-assessed C3b/C6): SHAP PLUS ties-or-beats SHAP in "
             f"{incl['shap_plus_ties_or_beats_shap_fraction']:.1%} of {incl['n_draws']} random weightings "
             f"({incl['shap_plus_strictly_beats_shap_fraction']:.1%} strictly beats)"
         )
         print(
-            f"  Weight-sensitivity (quantitative only, C6 excluded): SHAP PLUS ties-or-beats SHAP in "
+            f"  Weight-sensitivity (quantitative only, C3b/C6 excluded): SHAP PLUS ties-or-beats SHAP in "
             f"{quant['shap_plus_ties_or_beats_shap_fraction']:.1%} of {quant['n_draws']} random weightings "
             f"({quant['shap_plus_strictly_beats_shap_fraction']:.1%} strictly beats)"
         )

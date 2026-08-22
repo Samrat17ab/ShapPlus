@@ -4,35 +4,44 @@
       "C1": 3.0,
       "C2": 5.0,
       "C3a": 4.0,
+      "C3b": 2.0,
       "C6": 4.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_quantitative": 4.4,
-      "overall_with_checklist": 4.333333333333333,
-      "overall_measured": 4.4
+      "C5": 1.0,
+      "overall_all_8": 3.625,
+      "overall_quantitative": 3.8333333333333335,
+      "overall_with_checklist": 3.625,
+      "overall_measured": 3.8333333333333335
     },
     "lime": {
       "C1": 1.0,
       "C2": 1.0,
       "C3a": 1.0,
+      "C3b": 4.0,
       "C6": 3.5,
       "C7": 2.0,
       "C4": 4.0,
-      "overall_quantitative": 1.8,
-      "overall_with_checklist": 2.0833333333333335,
-      "overall_measured": 1.8
+      "C5": 1.0,
+      "overall_all_8": 2.1875,
+      "overall_quantitative": 1.6666666666666667,
+      "overall_with_checklist": 2.1875,
+      "overall_measured": 1.6666666666666667
     },
     "shap_plus": {
       "C1": 3.0,
       "C1_audit": 3.0,
       "C2": 5.0,
       "C3a": 3.0,
+      "C3b": 4.0,
       "C6": 4.5,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_quantitative": 4.2,
-      "overall_with_checklist": 4.25,
-      "overall_measured": 4.2
+      "C5": 1.0,
+      "overall_all_8": 3.8125,
+      "overall_quantitative": 3.6666666666666665,
+      "overall_with_checklist": 3.8125,
+      "overall_measured": 3.6666666666666665
     },
     "_c4_raw": {
       "shap_gap": 0.23619531817610945,
@@ -45,16 +54,16 @@
         "1.0": 48
       },
       "shap_presence_rate": 1.0,
-      "lime_gap": 0.038560170868746954,
+      "lime_gap": 0.0380346480750223,
       "lime_group_means": {
-        "0.0": -0.01969130384072253,
-        "1.0": 0.018868867028024428
+        "0.0": -0.01868622042031676,
+        "1.0": 0.019348427654705534
       },
       "lime_group_n": {
-        "0.0": 48,
-        "1.0": 16
+        "0.0": 43,
+        "1.0": 23
       },
-      "lime_presence_rate": 0.4266666666666667,
+      "lime_presence_rate": 0.44,
       "shap_plus_full_gap": 0.23619531817610945,
       "shap_plus_full_group_means": {
         "0.0": -0.09411122976470686,
@@ -67,27 +76,32 @@
         "1.0": 0.1877411219705503
       },
       "shap_plus_visible_presence_rate": 0.5333333333333333
-    }
+    },
+    "_c5_raw": 0.0
   },
   "hmeq": {
     "shap": {
       "C1": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
+      "C3b": 2.0,
       "C6": 4.0,
       "C7": 5.0,
+      "overall_all_8": 4.166666666666667,
       "overall_quantitative": 4.75,
-      "overall_with_checklist": 4.6,
+      "overall_with_checklist": 4.166666666666667,
       "overall_measured": 4.75
     },
     "lime": {
       "C1": 1.0,
       "C2": 3.0,
       "C3a": 1.0,
+      "C3b": 4.0,
       "C6": 3.5,
       "C7": 2.0,
+      "overall_all_8": 2.4166666666666665,
       "overall_quantitative": 1.75,
-      "overall_with_checklist": 2.1,
+      "overall_with_checklist": 2.4166666666666665,
       "overall_measured": 1.75
     },
     "shap_plus": {
@@ -95,10 +109,12 @@
       "C1_audit": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
+      "C3b": 4.0,
       "C6": 4.5,
       "C7": 5.0,
+      "overall_all_8": 4.416666666666667,
       "overall_quantitative": 4.5,
-      "overall_with_checklist": 4.5,
+      "overall_with_checklist": 4.416666666666667,
       "overall_measured": 4.5
     }
   },
@@ -107,35 +123,44 @@
       "C1": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
+      "C3b": 2.0,
       "C6": 4.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_quantitative": 4.8,
-      "overall_with_checklist": 4.666666666666667,
-      "overall_measured": 4.8
+      "C5": 5.0,
+      "overall_all_8": 4.375,
+      "overall_quantitative": 4.833333333333333,
+      "overall_with_checklist": 4.375,
+      "overall_measured": 4.833333333333333
     },
     "lime": {
       "C1": 1.0,
-      "C2": 1.0,
+      "C2": 2.0,
       "C3a": 1.0,
+      "C3b": 4.0,
       "C6": 3.5,
       "C7": 2.0,
       "C4": 5.0,
-      "overall_quantitative": 2.0,
-      "overall_with_checklist": 2.25,
-      "overall_measured": 2.0
+      "C5": 5.0,
+      "overall_all_8": 2.9375,
+      "overall_quantitative": 2.6666666666666665,
+      "overall_with_checklist": 2.9375,
+      "overall_measured": 2.6666666666666665
     },
     "shap_plus": {
       "C1": 4.0,
       "C1_audit": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
+      "C3b": 4.0,
       "C6": 4.5,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_quantitative": 4.6,
-      "overall_with_checklist": 4.583333333333333,
-      "overall_measured": 4.6
+      "C5": 5.0,
+      "overall_all_8": 4.5625,
+      "overall_quantitative": 4.666666666666667,
+      "overall_with_checklist": 4.5625,
+      "overall_measured": 4.666666666666667
     },
     "_c4_raw": {
       "shap_gap": 0.18777179869660887,
@@ -152,20 +177,20 @@
         "3.0": 22
       },
       "shap_presence_rate": 1.0,
-      "lime_gap": 0.06140065266067088,
+      "lime_gap": 0.06341064022633719,
       "lime_group_means": {
-        "0.0": 0.032124679917275314,
-        "1.0": -0.029275972743395565,
-        "2.0": 0.01088440694106363,
-        "3.0": 0.009157049753614454
+        "0.0": 0.026173429440087968,
+        "1.0": -0.035833588283894435,
+        "2.0": -0.003630597727895816,
+        "3.0": 0.027577051942442754
       },
       "lime_group_n": {
         "0.0": 13,
-        "1.0": 25,
-        "2.0": 10,
-        "3.0": 11
+        "1.0": 26,
+        "2.0": 7,
+        "3.0": 8
       },
-      "lime_presence_rate": 0.3933333333333333,
+      "lime_presence_rate": 0.36,
       "shap_plus_full_gap": 0.18777179869660887,
       "shap_plus_full_group_means": {
         "0.0": 0.058017683644653616,
@@ -180,42 +205,52 @@
         "2.0": 0.2778967487501661
       },
       "shap_plus_visible_presence_rate": 0.013333333333333334
-    }
+    },
+    "_c5_raw": 0.07804493496255416
   },
   "hmda_nh": {
     "shap": {
       "C1": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
+      "C3b": 2.0,
       "C6": 4.0,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_quantitative": 4.8,
-      "overall_with_checklist": 4.666666666666667,
-      "overall_measured": 4.8
+      "C5": 5.0,
+      "overall_all_8": 4.375,
+      "overall_quantitative": 4.833333333333333,
+      "overall_with_checklist": 4.375,
+      "overall_measured": 4.833333333333333
     },
     "lime": {
       "C1": 1.0,
       "C2": 1.0,
       "C3a": 1.0,
+      "C3b": 4.0,
       "C6": 3.5,
       "C7": 2.0,
       "C4": 5.0,
-      "overall_quantitative": 2.0,
-      "overall_with_checklist": 2.25,
-      "overall_measured": 2.0
+      "C5": 5.0,
+      "overall_all_8": 2.8125,
+      "overall_quantitative": 2.5,
+      "overall_with_checklist": 2.8125,
+      "overall_measured": 2.5
     },
     "shap_plus": {
       "C1": 4.0,
       "C1_audit": 5.0,
       "C2": 5.0,
       "C3a": 4.0,
+      "C3b": 4.0,
       "C6": 4.5,
       "C7": 5.0,
       "C4": 5.0,
-      "overall_quantitative": 4.6,
-      "overall_with_checklist": 4.583333333333333,
-      "overall_measured": 4.6
+      "C5": 5.0,
+      "overall_all_8": 4.5625,
+      "overall_quantitative": 4.666666666666667,
+      "overall_with_checklist": 4.5625,
+      "overall_measured": 4.666666666666667
     },
     "_c4_raw": {
       "shap_gap": 0.24732097640129527,
@@ -232,20 +267,20 @@
         "3.0": 12
       },
       "shap_presence_rate": 1.0,
-      "lime_gap": 0.0773158629571904,
+      "lime_gap": 0.08226249963739367,
       "lime_group_means": {
-        "0.0": 0.029034187465638687,
-        "1.0": -0.048281675491551705,
-        "2.0": 0.02688553002800247,
-        "3.0": 0.004645727973081052
+        "0.0": 0.0383126459487403,
+        "1.0": -0.04394985368865337,
+        "2.0": 0.031048598986249457,
+        "3.0": 0.03236239425813185
       },
       "lime_group_n": {
-        "0.0": 12,
-        "1.0": 45,
-        "2.0": 24,
-        "3.0": 9
+        "0.0": 8,
+        "1.0": 53,
+        "2.0": 26,
+        "3.0": 6
       },
-      "lime_presence_rate": 0.6,
+      "lime_presence_rate": 0.62,
       "shap_plus_full_gap": 0.24732097640129527,
       "shap_plus_full_group_means": {
         "0.0": 0.02671740940272669,
@@ -261,6 +296,7 @@
         "3.0": -0.11576425489367508
       },
       "shap_plus_visible_presence_rate": 0.02666666666666667
-    }
+    },
+    "_c5_raw": 0.2143290831815422
   }
 }

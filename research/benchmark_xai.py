@@ -497,6 +497,22 @@ def run_dataset(
             f"SHAP_PLUS(full)={gap_sp_full} SHAP_PLUS(visible)={gap_sp_visible}"
         )
 
+    # ---- C5 fairness transparency (a model property, ties across methods) ----
+    if protected_feature is not None:
+        model_predictions = np.asarray(booster.predict(sample_frame))
+        favourable = (
+            model_predictions < sp_explainer.decision_threshold
+            if sp_explainer.positive_class_is_adverse
+            else model_predictions >= sp_explainer.decision_threshold
+        )
+        _, approval_rates, _ = bias_gap_two_group(
+            np.where(favourable, 1.0, 0.0), group_labels_full
+        )
+        if len(approval_rates) >= 2:
+            result["c5_disparity"] = float(max(approval_rates.values()) - min(approval_rates.values()))
+            result["c5_approval_rates"] = approval_rates
+            print(f"  C5 approval-rate disparity ({protected_feature}): {result['c5_disparity']:.4f}")
+
     result["protected_feature"] = protected_feature
     result["sample_idx"] = idx.tolist()
     result["consistency_idx"] = idx_c.tolist()

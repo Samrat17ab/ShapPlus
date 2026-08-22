@@ -93,6 +93,11 @@
       "1.0": 0.15032006465068012
     },
     "audit_vector_gap": 0.238064267749216,
+    "approval_rates": {
+      "0.0": 1.0,
+      "1.0": 0.9911504424778761
+    },
+    "approval_rate_disparity": 0.008849557522123908,
     "recourse_achieved_rate": 1.0,
     "recourse_normalized_cost": {
       "n": 1,
@@ -299,6 +304,13 @@
       "1.0": -0.09521617194695205
     },
     "audit_vector_gap": 0.17228632968615148,
+    "approval_rates": {
+      "3.0": 0.9714285714285714,
+      "2.0": 0.8170731707317073,
+      "0.0": 0.8421052631578947,
+      "1.0": 0.9206349206349206
+    },
+    "approval_rate_disparity": 0.15435540069686415,
     "recourse_achieved_rate": 0.9666666666666667,
     "recourse_normalized_cost": {
       "n": 35,
@@ -407,6 +419,13 @@
       "3.0": 0.09989853161465079
     },
     "audit_vector_gap": 0.2541190514520859,
+    "approval_rates": {
+      "0.0": 0.8214285714285714,
+      "2.0": 0.7789473684210526,
+      "1.0": 0.8547008547008547,
+      "3.0": 0.875
+    },
+    "approval_rate_disparity": 0.09605263157894739,
     "recourse_achieved_rate": 0.9566666666666667,
     "recourse_normalized_cost": {
       "n": 52,
