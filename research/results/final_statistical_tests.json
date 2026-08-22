@@ -3,27 +3,27 @@
     "fidelity_test": {
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
-      "mean_a": 0.7936918052761907,
-      "mean_b": 0.24075661275273424,
-      "mean_diff": 0.5529351925234564,
-      "ci95_low": 0.5316935613813774,
-      "ci95_high": 0.5734833897126668,
-      "wilcoxon_statistic": 0.0,
-      "p_value": 2.2996057560669792e-26,
-      "cohens_d_paired": 4.243685551647578,
+      "mean_a": 0.730476337021749,
+      "mean_b": 0.2820851034121917,
+      "mean_diff": 0.4483912336095572,
+      "ci95_low": 0.4243698666631866,
+      "ci95_high": 0.47070171823519624,
+      "wilcoxon_statistic": 2.0,
+      "p_value": 2.3939507369660054e-26,
+      "cohens_d_paired": 3.0932353456413333,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
-      "mean_a": 0.5545444444444445,
-      "mean_b": 1.0318333333333336,
-      "mean_diff": -0.4772888888888889,
-      "ci95_low": -0.4892281666666668,
-      "ci95_high": -0.4658414722222222,
+      "mean_a": 0.50133,
+      "mean_b": 1.0344333333333335,
+      "mean_diff": -0.5331033333333334,
+      "ci95_low": -0.5473022777777778,
+      "ci95_high": -0.5183541111111111,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.293449863743624e-26,
-      "cohens_d_paired": -6.602478673377969,
+      "p_value": 2.2979933297782637e-26,
+      "cohens_d_paired": -5.927710784688064,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
@@ -39,8 +39,8 @@
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.778,
-        "shap_plus_strictly_beats_shap_fraction": 0.778
+        "shap_plus_ties_or_beats_shap_fraction": 1.0,
+        "shap_plus_strictly_beats_shap_fraction": 1.0
       },
       "quantitative_only": {
         "criteria_used": [
@@ -52,7 +52,7 @@
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.0,
+        "shap_plus_ties_or_beats_shap_fraction": 1.0,
         "shap_plus_strictly_beats_shap_fraction": 0.0
       }
     }
@@ -61,27 +61,27 @@
     "fidelity_test": {
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
-      "mean_a": 0.7574230070549779,
-      "mean_b": 0.2360720085998604,
-      "mean_diff": 0.5213509984551176,
-      "ci95_low": 0.49605980053169146,
-      "ci95_high": 0.5447785011134655,
+      "mean_a": 0.698032644752523,
+      "mean_b": 0.24927266742197124,
+      "mean_diff": 0.4487599773305518,
+      "ci95_low": 0.42404520041516003,
+      "ci95_high": 0.4740942643666296,
       "wilcoxon_statistic": 0.0,
       "p_value": 2.2996057560669792e-26,
-      "cohens_d_paired": 3.41707907095602,
+      "cohens_d_paired": 2.8954408883661107,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
-      "mean_a": 0.47198111111111113,
-      "mean_b": 0.9584199999999998,
-      "mean_diff": -0.4864388888888889,
-      "ci95_low": -0.4984600277777778,
-      "ci95_high": -0.4755898333333335,
+      "mean_a": 0.4250911111111111,
+      "mean_b": 0.9583133333333335,
+      "mean_diff": -0.5332222222222224,
+      "ci95_low": -0.5477686944444445,
+      "ci95_high": -0.5182962777777778,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.2925307243328646e-26,
-      "cohens_d_paired": -6.761653671553026,
+      "p_value": 2.296209416182465e-26,
+      "cohens_d_paired": -5.7334907578801495,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
@@ -95,8 +95,8 @@
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.7688,
-        "shap_plus_strictly_beats_shap_fraction": 0.7688
+        "shap_plus_ties_or_beats_shap_fraction": 0.5894,
+        "shap_plus_strictly_beats_shap_fraction": 0.5894
       },
       "quantitative_only": {
         "criteria_used": [
@@ -115,27 +115,27 @@
     "fidelity_test": {
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
-      "mean_a": 0.803182131674591,
-      "mean_b": 0.2876897796165012,
-      "mean_diff": 0.5154923520580897,
-      "ci95_low": 0.4769446189515897,
-      "ci95_high": 0.5541791422161395,
-      "wilcoxon_statistic": 7.0,
-      "p_value": 2.6469347492701727e-26,
-      "cohens_d_paired": 2.102641108130261,
+      "mean_a": 0.7395052264047711,
+      "mean_b": 0.28319401358259755,
+      "mean_diff": 0.4563112128221735,
+      "ci95_low": 0.4210316208728567,
+      "ci95_high": 0.4919563367015898,
+      "wilcoxon_statistic": 21.0,
+      "p_value": 3.505097408547546e-26,
+      "cohens_d_paired": 2.028034459026439,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
-      "mean_a": 0.5094755555555556,
-      "mean_b": 1.0261533333333333,
-      "mean_diff": -0.5166777777777778,
-      "ci95_low": -0.5312837777777779,
-      "ci95_high": -0.5028486666666667,
+      "mean_a": 0.46511888888888886,
+      "mean_b": 1.0249733333333335,
+      "mean_diff": -0.5598544444444445,
+      "ci95_low": -0.5735878611111112,
+      "ci95_high": -0.5463086111111111,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.2985690710227698e-26,
-      "cohens_d_paired": -5.732308392933466,
+      "p_value": 2.29822360957417e-26,
+      "cohens_d_paired": -6.387374619717883,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
@@ -151,8 +151,8 @@
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.7798,
-        "shap_plus_strictly_beats_shap_fraction": 0.7798
+        "shap_plus_ties_or_beats_shap_fraction": 0.5956,
+        "shap_plus_strictly_beats_shap_fraction": 0.5956
       },
       "quantitative_only": {
         "criteria_used": [
@@ -173,27 +173,27 @@
     "fidelity_test": {
       "label": "SHAP PLUS fidelity vs LIME fidelity (higher is better for both)",
       "n": 150,
-      "mean_a": 0.7927586435416539,
-      "mean_b": 0.2746571870926184,
-      "mean_diff": 0.5181014564490355,
-      "ci95_low": 0.48021096105749006,
-      "ci95_high": 0.5530868549088788,
-      "wilcoxon_statistic": 9.0,
-      "p_value": 2.755394799578309e-26,
-      "cohens_d_paired": 2.2892407488142172,
+      "mean_a": 0.7277653870067263,
+      "mean_b": 0.26473588192129616,
+      "mean_diff": 0.4630295050854302,
+      "ci95_low": 0.4296182372779911,
+      "ci95_high": 0.4956537743336452,
+      "wilcoxon_statistic": 11.0,
+      "p_value": 2.868259030857876e-26,
+      "cohens_d_paired": 2.2683454994309953,
       "significant_at_0.05": true
     },
     "complexity_test": {
       "label": "SHAP PLUS complexity vs LIME complexity (lower is better for both)",
       "n": 150,
-      "mean_a": 0.49533444444444447,
-      "mean_b": 1.0218733333333334,
-      "mean_diff": -0.5265388888888889,
-      "ci95_low": -0.5398490555555556,
-      "ci95_high": -0.5130709166666667,
+      "mean_a": 0.4484077777777777,
+      "mean_b": 1.0240000000000002,
+      "mean_diff": -0.5755922222222223,
+      "ci95_low": -0.5901611944444446,
+      "ci95_high": -0.5608461944444445,
       "wilcoxon_statistic": 0.0,
-      "p_value": 2.2986842359745088e-26,
-      "cohens_d_paired": -6.265987139748483,
+      "p_value": 2.2982811830025973e-26,
+      "cohens_d_paired": -6.069713067905031,
       "significant_at_0.05": true
     },
     "weight_sensitivity": {
@@ -209,8 +209,8 @@
           "C7"
         ],
         "n_draws": 5000,
-        "shap_plus_ties_or_beats_shap_fraction": 0.7798,
-        "shap_plus_strictly_beats_shap_fraction": 0.7798
+        "shap_plus_ties_or_beats_shap_fraction": 0.5956,
+        "shap_plus_strictly_beats_shap_fraction": 0.5956
       },
       "quantitative_only": {
         "criteria_used": [

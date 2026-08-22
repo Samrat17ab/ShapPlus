@@ -76,11 +76,13 @@ def evaluate_config(hyperparams: dict, tune_pools: dict) -> dict:
             "score": score,
         }
     scores = [v["score"] for v in per_dataset.values()]
+    fidelities = [v["fidelity"] for v in per_dataset.values()]
     return {
         "hyperparams": hyperparams,
         "per_dataset": per_dataset,
         "min_score": float(np.min(scores)),
         "mean_score": float(np.mean(scores)),
+        "mean_fidelity": float(np.mean(fidelities)),
     }
 
 
@@ -115,16 +117,22 @@ def main() -> None:
             f"mean_score={result['mean_score']:.3f}  ({time.time()-t0:.0f}s elapsed)"
         )
 
-    best = max(log, key=lambda r: (r["min_score"], r["mean_score"]))
+    # min_score/mean_score are coarse (discretized into 1-5 CSF tiers), so
+    # ties are common and previously broke arbitrarily -- toward whichever
+    # config happened to appear first in the combos list, which is not a
+    # meaningful preference. mean_fidelity (continuous, not tiered) breaks
+    # ties in favor of the config that is genuinely better, not earlier.
+    best = max(log, key=lambda r: (r["min_score"], r["mean_score"], r["mean_fidelity"]))
     print(f"\nSelected: {best['hyperparams']}")
     print(f"  worst-case (min) dataset score: {best['min_score']:.3f}")
     print(f"  mean dataset score: {best['mean_score']:.3f}")
+    print(f"  mean fidelity (tie-break): {best['mean_fidelity']:.3f}")
     for key, v in best["per_dataset"].items():
         print(f"    {key:12s} coverage={v['coverage']:.3f} fidelity={v['fidelity']:.3f} complexity={v['complexity']:.3f} score={v['score']:.3f}")
 
     output = {
         "selected_hyperparams": best["hyperparams"],
-        "selection_criterion": "max(min_score across dev datasets, then mean_score) on TUNE pool only",
+        "selection_criterion": "max(min_score across dev datasets, then mean_score, then mean_fidelity as a tie-break) on TUNE pool only",
         "tune_pool_size_per_dataset": TUNE_N,
         "tune_seed": SEED,
         "full_grid_log": log,

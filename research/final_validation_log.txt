@@ -1,38 +1,38 @@
-Using frozen hyperparameters (selected on tune pool, never touching report/holdout): {'min_leaf_weight_fraction': 0.0015, 'quantile_grid_size': 39, 'objective_weights': [0.4, 0.1, 0.3, 0.2]}
+Using frozen hyperparameters (selected on tune pool, never touching report/holdout): {'min_leaf_weight_fraction': 0.0015, 'quantile_grid_size': 39, 'objective_weights': [0.35, 0.05, 0.35, 0.25]}
 
 
 === home_credit ===
-  SHAP ... coverage=0.758 consistency=1.000 (1.0s)
-  LIME (stochastic) ... fidelity=0.241 consistency=0.336 (65.0s)
-  LIME (fixed-seed) ... consistency=1.000 exact=True (28.9s)
-  SHAP PLUS ... coverage=0.749 fidelity=0.794 consistency=1.000 fallback_rate=0.240 (54.3s)
-  C4 bias gap (CODE_GENDER): SHAP=0.23619531817610945 LIME=0.0380346480750223 SHAP_PLUS(full)=0.23619531817610945 SHAP_PLUS(visible)=0.2996187015005204
-  C5 approval-rate disparity (CODE_GENDER): 0.0000
-  dataset total: 149.3s
+  SHAP ... coverage=0.719 consistency=1.000 (1.0s)
+  LIME (stochastic) ... fidelity=0.282 consistency=0.369 (34.8s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (14.3s)
+  SHAP PLUS ... coverage=0.712 fidelity=0.730 consistency=1.000 fallback_rate=0.473 (36.8s)
+  C4 bias gap (CODE_GENDER): SHAP=0.27136079092230486 LIME=0.11874346304956018 SHAP_PLUS(full)=0.27136079092230486 SHAP_PLUS(visible)=0.36234705665416744
+  C5 approval-rate disparity (CODE_GENDER): 0.2328
+  dataset total: 86.9s
 
 === hmeq ===
-  SHAP ... coverage=0.976 consistency=1.000 (1.4s)
-  LIME (stochastic) ... fidelity=0.236 consistency=0.779 (6.3s)
-  LIME (fixed-seed) ... consistency=1.000 exact=True (1.5s)
-  SHAP PLUS ... coverage=0.973 fidelity=0.757 consistency=1.000 fallback_rate=0.347 (50.4s)
-  dataset total: 59.6s
+  SHAP ... coverage=0.975 consistency=1.000 (1.6s)
+  LIME (stochastic) ... fidelity=0.249 consistency=0.772 (8.1s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (1.6s)
+  SHAP PLUS ... coverage=0.972 fidelity=0.698 consistency=1.000 fallback_rate=0.613 (36.3s)
+  dataset total: 47.6s
 
 === hmda_vt ===
-  SHAP ... coverage=0.974 consistency=1.000 (0.8s)
-  LIME (stochastic) ... fidelity=0.288 consistency=0.602 (4.6s)
-  LIME (fixed-seed) ... consistency=1.000 exact=True (1.3s)
-  SHAP PLUS ... coverage=0.972 fidelity=0.803 consistency=1.000 fallback_rate=0.240 (35.8s)
-  C4 bias gap (derived_sex): SHAP=0.18777179869660887 LIME=0.06341064022633719 SHAP_PLUS(full)=0.18777179869660887 SHAP_PLUS(visible)=0.39467400484236836
-  C5 approval-rate disparity (derived_sex): 0.0780
-  dataset total: 42.5s
+  SHAP ... coverage=0.977 consistency=1.000 (0.3s)
+  LIME (stochastic) ... fidelity=0.283 consistency=0.660 (3.3s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (0.9s)
+  SHAP PLUS ... coverage=0.975 fidelity=0.740 consistency=1.000 fallback_rate=0.487 (27.9s)
+  C4 bias gap (derived_sex): SHAP=0.15102450706471876 LIME=0.04790111508040715 SHAP_PLUS(full)=0.15102450706471876 SHAP_PLUS(visible)=0.5360666935979834
+  C5 approval-rate disparity (derived_sex): 0.2125
+  dataset total: 32.4s
 
 === hmda_nh ===
-  SHAP ... coverage=0.967 consistency=1.000 (0.9s)
-  LIME (stochastic) ... fidelity=0.275 consistency=0.578 (5.1s)
-  LIME (fixed-seed) ... consistency=1.000 exact=True (1.6s)
-  SHAP PLUS ... coverage=0.965 fidelity=0.793 consistency=1.000 fallback_rate=0.253 (35.2s)
-  C4 bias gap (derived_sex): SHAP=0.24732097640129527 LIME=0.08226249963739367 SHAP_PLUS(full)=0.24732097640129527 SHAP_PLUS(visible)=0.42143611923260993
-  C5 approval-rate disparity (derived_sex): 0.2143
-  dataset total: 42.9s
+  SHAP ... coverage=0.972 consistency=1.000 (0.5s)
+  LIME (stochastic) ... fidelity=0.265 consistency=0.603 (4.2s)
+  LIME (fixed-seed) ... consistency=1.000 exact=True (1.0s)
+  SHAP PLUS ... coverage=0.970 fidelity=0.728 consistency=1.000 fallback_rate=0.447 (27.7s)
+  C4 bias gap (derived_sex): SHAP=0.21430577978476933 LIME=0.07954206564816434 SHAP_PLUS(full)=0.21430577978476933 SHAP_PLUS(visible)=0.36121276500499677
+  C5 approval-rate disparity (derived_sex): 0.2641
+  dataset total: 33.3s
 
 Saved final benchmark to C:\Users\samla\Documents\Samrat Lamsal\research\results\final_benchmark_raw.json

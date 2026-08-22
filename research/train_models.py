@@ -35,6 +35,13 @@ def train_one(key: str) -> dict:
     train_set = lgb.Dataset(X_train, label=y_train)
     val_set = lgb.Dataset(X_val, label=y_val, reference=train_set)
 
+    # Matches the conference paper's own training code exactly: without this,
+    # LightGBM on an imbalanced dataset (Home Credit's 8% positive rate)
+    # collapses toward always predicting the majority class at the 0.5
+    # threshold (recall 0.014 instead of the paper's 0.679), which silently
+    # erases any real approval-rate disparity C5 is supposed to measure.
+    scale_pos_weight = float((y_train == 0).sum() / (y_train == 1).sum())
+
     params = {
         "objective": "binary",
         "metric": "auc",
@@ -43,6 +50,7 @@ def train_one(key: str) -> dict:
         "feature_fraction": 0.9,
         "bagging_fraction": 0.9,
         "bagging_freq": 5,
+        "scale_pos_weight": scale_pos_weight,
         "verbosity": -1,
         "seed": 42,
     }
