@@ -1,0 +1,50 @@
+{
+  "home_credit": {
+    "C1": 3.0,
+    "C1_audit_only": 3.0,
+    "C1_fidelity_only": 4.0,
+    "C2": 5.0,
+    "C3a": 3.0,
+    "C4": 5.0,
+    "C6": 4.5,
+    "C7": 5.0,
+    "overall_quantitative": 4.2,
+    "overall_with_checklist": 4.25
+  },
+  "hmeq": {
+    "C1": 4.0,
+    "C1_audit_only": 5.0,
+    "C1_fidelity_only": 4.0,
+    "C2": 5.0,
+    "C3a": 4.0,
+    "C4": null,
+    "C6": 4.5,
+    "C7": 5.0,
+    "overall_quantitative": 4.5,
+    "overall_with_checklist": 4.5
+  },
+  "hmda_vt": {
+    "C1": 4.0,
+    "C1_audit_only": 5.0,
+    "C1_fidelity_only": 4.0,
+    "C2": 5.0,
+    "C3a": 4.0,
+    "C4": 5.0,
+    "C6": 4.5,
+    "C7": 5.0,
+    "overall_quantitative": 4.6,
+    "overall_with_checklist": 4.583333333333333
+  },
+  "hmda_nh": {
+    "C1": 4.0,
+    "C1_audit_only": 5.0,
+    "C1_fidelity_only": 4.0,
+    "C2": 5.0,
+    "C3a": 4.0,
+    "C4": 5.0,
+    "C6": 4.5,
+    "C7": 5.0,
+    "overall_quantitative": 4.6,
+    "overall_with_checklist": 4.583333333333333
+  }
+}
