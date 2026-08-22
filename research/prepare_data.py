@@ -1,11 +1,26 @@
 """Loads and encodes the three benchmark datasets into a common shape.
 
 Each loader returns (X, y, protected_feature, categorical_columns, display_name):
-  X: DataFrame, fully numeric (label-encoded categoricals), median-imputed.
+  X: DataFrame, fully numeric (label-encoded categoricals), NaN PRESERVED.
   y: Series of {0, 1}, 1 = adverse outcome (default / delinquency / denial).
   protected_feature: column name usable for C4 bias-detection analysis, or None.
   categorical_columns: names of columns that were label-encoded (treated as
     categorical by the explainer neighborhood construction).
+
+X is intentionally NOT median-imputed here. The paper's own training code
+feeds raw, NaN-preserving data to LightGBM (which handles missing values
+natively via learned split-direction, per-split) and only ever imputes a
+separate copy for LIME, which cannot accept NaN -- and critically, computes
+that imputation's fill values from the TRAINING split only, applying them
+unchanged to validation/test, exactly like train_models.py's split does
+downstream. A prior version of this loader median-imputed X globally, across
+the full dataset, before any split existed -- meaning LightGBM was trained on
+a materially different (and leakier) dataset than the paper's own code
+produces. shap.TreeExplainer and SHAPPlusExplainer both handle NaN natively
+(the latter via its own internal per-feature median fallback in
+shap_plus/explainer.py), so neither needs a filled copy; only LIME does, and
+that fill now happens downstream in benchmark_xai.py, train-only, right
+before LIME is invoked.
 """
 
 from __future__ import annotations
@@ -44,8 +59,13 @@ def load_home_credit(n_rows: int | None = None) -> tuple[pd.DataFrame, pd.Series
     y = df["TARGET"].astype(int)
     X = df.drop(columns=["TARGET", "SK_ID_CURR"])
 
+    # Matches the paper's own comment verbatim: "Drop only 100%-missing
+    # columns (not the common 40%-threshold)." A prior version of this loader
+    # used an 80% threshold instead -- currently zero-impact on this exact
+    # CSV (no column exceeds 80% missing), but not what the paper's code
+    # actually says, so corrected for fidelity regardless.
     missing_frac = X.isna().mean()
-    keep = missing_frac[missing_frac <= 0.80].index.tolist()
+    keep = missing_frac[missing_frac < 1.0].index.tolist()
     X = X[keep]
 
     categorical_columns = [
@@ -56,7 +76,6 @@ def load_home_credit(n_rows: int | None = None) -> tuple[pd.DataFrame, pd.Series
         X[col] = _label_encode(X[col])
 
     X = X.apply(pd.to_numeric, errors="coerce")
-    X = X.fillna(X.median(numeric_only=True))
 
     protected_feature = "CODE_GENDER"
     return X, y, protected_feature, categorical_columns, "Home Credit Default Risk"
@@ -73,7 +92,6 @@ def load_hmeq() -> tuple[pd.DataFrame, pd.Series, str | None, list[str], str]:
         X[col] = _label_encode(X[col])
 
     X = X.apply(pd.to_numeric, errors="coerce")
-    X = X.fillna(X.median(numeric_only=True))
 
     # HMEQ has no demographic columns at all -- there is nothing to bias-test.
     return X, y, None, categorical_columns, "HMEQ Home Equity Loan"
@@ -168,7 +186,6 @@ def _load_hmda(filename: str, display_name: str) -> tuple[pd.DataFrame, pd.Serie
 
     X = pd.DataFrame(frame, index=df.index)
     X = X.apply(pd.to_numeric, errors="coerce")
-    X = X.fillna(X.median(numeric_only=True))
 
     protected_feature = "derived_sex"
     return X, y, protected_feature, categorical_columns, display_name
@@ -209,4 +226,4 @@ if __name__ == "__main__":
         X, y, protected, cats, name = loader()
         print(f"{key:12s} [{tag:7s}] {name:40s} rows={len(X):>7} cols={X.shape[1]:>3} "
               f"positive_rate={y.mean():.4f} protected={protected} n_cat={len(cats)} "
-              f"nulls_after_impute={int(X.isna().sum().sum())}")
+              f"raw_nulls={int(X.isna().sum().sum())}")

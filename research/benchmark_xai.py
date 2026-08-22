@@ -135,12 +135,29 @@ def shap_consistency(booster, sample_frame):
 # ---------------------------------------------------------------------------
 
 def run_plain_lime(booster, X_train, feature_names, categorical_columns, sample_frame, protected_feature, seed=None):
-    cat_idx = [feature_names.index(c) for c in categorical_columns]
+    # No categorical_features argument -- verbatim match to the paper's own
+    # LimeTabularExplainer calls, which never pass this parameter, so every
+    # label-encoded column (including the protected feature) is treated as
+    # continuous and quantile-discretized by LIME's default behavior. A
+    # prior version of this function passed categorical_features=cat_idx,
+    # which changes LIME's perturbation and discretization strategy for
+    # every categorical column, not just the protected one -- a real,
+    # wide-reaching divergence from the paper's actual methodology.
+    #
+    # LIME cannot accept NaN (unlike LightGBM/SHAP/SHAP PLUS, which all
+    # handle missing values natively). X_train/sample_frame carry real NaN
+    # now that prepare_data.py no longer pre-imputes, so -- matching the
+    # paper's own train_medians / X_train_filled / X_sample_filled pattern
+    # exactly -- fill values are computed from the training split only, and
+    # applied to both the explainer's background data and the rows being
+    # explained. Nothing outside this function ever sees the filled copy.
+    train_median = X_train.median(numeric_only=True)
+    X_train_filled = X_train.fillna(train_median)
+    sample_frame_filled = sample_frame.fillna(train_median)
     predict_fn = make_predict_proba(booster)
     lime_explainer = LimeTabularExplainer(
-        X_train.values,
+        X_train_filled.values,
         feature_names=feature_names,
-        categorical_features=cat_idx,
         class_names=["favourable", "adverse"],
         discretize_continuous=True,
         mode="classification",
@@ -150,7 +167,7 @@ def run_plain_lime(booster, X_train, feature_names, categorical_columns, sample_
     protected_attr = []
     present_count = 0
     protected_idx = feature_names.index(protected_feature) if protected_feature is not None else None
-    for _, row in sample_frame.iterrows():
+    for _, row in sample_frame_filled.iterrows():
         exp = lime_explainer.explain_instance(
             row.values, predict_fn, num_features=TOP_K, num_samples=LIME_NUM_SAMPLES
         )
@@ -178,14 +195,17 @@ def run_plain_lime(booster, X_train, feature_names, categorical_columns, sample_
 
 
 def lime_consistency(booster, X_train, feature_names, categorical_columns, sample_frame, fixed_seed):
-    cat_idx = [feature_names.index(c) for c in categorical_columns]
+    # No categorical_features argument here either -- see run_plain_lime.
+    # Same train-only fill as run_plain_lime -- see its docstring comment.
+    train_median = X_train.median(numeric_only=True)
+    X_train_filled = X_train.fillna(train_median)
+    sample_frame_filled = sample_frame.fillna(train_median)
     predict_fn = make_predict_proba(booster)
 
     def build_explainer(seed):
         return LimeTabularExplainer(
-            X_train.values,
+            X_train_filled.values,
             feature_names=feature_names,
-            categorical_features=cat_idx,
             class_names=["favourable", "adverse"],
             discretize_continuous=True,
             mode="classification",
@@ -198,7 +218,7 @@ def lime_consistency(booster, X_train, feature_names, categorical_columns, sampl
     exp_b = build_explainer(seed_b)
     scores = []
     exact_flags = []
-    for _, row in sample_frame.iterrows():
+    for _, row in sample_frame_filled.iterrows():
         e1 = exp_a.explain_instance(row.values, predict_fn, num_features=TOP_K, num_samples=LIME_NUM_SAMPLES)
         e2 = exp_b.explain_instance(row.values, predict_fn, num_features=TOP_K, num_samples=LIME_NUM_SAMPLES)
         set1 = {idx for idx, _ in e1.local_exp[1]}
@@ -300,20 +320,27 @@ def shap_plus_consistency(explainer, sample_frame):
 
 def bias_gap_two_group(values, group_labels):
     """Signed-mean attribution gap across groups. NaN entries (feature not
-    surfaced in that instance's explanation) are excluded from that group's
-    mean, matching the paper's own treatment of LIME's partial coverage."""
+    surfaced in that instance's explanation) are ZERO-IMPUTED, not excluded --
+    this matches the paper's own C4 LIME methodology exactly: its code
+    appends 0.0 to a group's weight list whenever the protected feature is
+    absent from that instance's top-10 explanation, then takes the mean over
+    the FULL group (not just the instances where the feature was found). An
+    earlier version of this function excluded NaN instead, which inflates
+    the apparent gap for any method with partial presence (LIME, and SHAP
+    PLUS's visible-rule variant) since it drops exactly the low-salience
+    instances that would otherwise pull the mean toward zero."""
     values = np.asarray(values, dtype=float)
+    imputed = np.where(np.isnan(values), 0.0, values)
     groups = pd.Series(group_labels).reset_index(drop=True).to_numpy()
     means = {}
     counts = {}
     for g in sorted(set(groups.tolist())):
         mask = groups == g
-        group_values = values[mask]
-        valid = group_values[~np.isnan(group_values)]
-        counts[str(g)] = int(len(valid))
-        if len(valid) == 0:
+        group_values = imputed[mask]
+        counts[str(g)] = int(mask.sum())
+        if len(group_values) == 0:
             continue
-        means[str(g)] = float(np.mean(valid))
+        means[str(g)] = float(np.mean(group_values))
     if len(means) < 2:
         return None, means, counts
     vals = list(means.values())

@@ -142,8 +142,16 @@ def _score_coverage(value: float) -> float:
 
 
 def _score_fidelity(value: float) -> float:
-    # Table IV, "Fidelity R^2 (LIME)" column: <0.55 -> 1 (None/non-compliant).
-    return 5.0 if value >= 0.85 else 4.0 if value >= 0.75 else 3.0 if value >= 0.65 else 2.0 if value >= 0.55 else 1.0
+    # Verbatim from the paper's own reference implementation (score_fidelity()
+    # in its Colab script, supplied by the user): floor is 1.5, not 1.0 --
+    # "non-compliant but non-zero credit" per the paper's own comment. This
+    # is confirmed against the paper's own printed output (LIME C1 = 1.5 in
+    # its Table IV summary), not just the function body. A prior revision of
+    # this file used a 1.0 floor on the belief that Table IV's prose
+    # described a stricter cutoff; the paper's own executed code is the
+    # ground truth for reproducing its published numbers, so that change is
+    # reverted here.
+    return 5.0 if value >= 0.85 else 4.0 if value >= 0.75 else 3.0 if value >= 0.65 else 2.0 if value >= 0.55 else 1.5
 
 
 def _score_jaccard(value: float) -> float:
@@ -160,7 +168,13 @@ def _score_bias_gap(value: float) -> float:
 
 
 def _score_disparity(value: float) -> float:
-    # The paper defines no separate C5 threshold table; C5 (approval-rate
-    # disparity) is the same kind of gap metric as C4's bias gap, so it uses
-    # Table IV's "Bias Gap Delta" column directly, all five tiers included.
-    return _score_bias_gap(value)
+    # Verbatim from the paper's own reference implementation: score_disparity()
+    # is a DISTINCT function from score_bias_gap(), with only four tiers and a
+    # floor of 2.0, not five tiers with a floor of 1.0. A prior revision of
+    # this file assumed no separate C5 table existed and reused
+    # _score_bias_gap() -- wrong; the paper's own code defines this formula
+    # separately, and the two are not interchangeable in general (they happen
+    # to agree at the top tier, which is why this bug produced no visible
+    # difference on datasets where the measured disparity was already >=0.05).
+    value = abs(value)
+    return 5.0 if value >= 0.05 else 4.0 if value >= 0.03 else 3.0 if value >= 0.01 else 2.0
