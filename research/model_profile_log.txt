@@ -1,0 +1,45 @@
+
+=== home_credit ===
+  fidelity R^2   mean=0.784 median=0.806 std=0.091 [0.415, 0.958]  (n=300)
+  complexity SC  mean=0.552 median=0.592 std=0.071 [0.280, 0.636]
+  coverage       mean=0.755 median=0.761 std=0.055
+  rule length    mean=4.35 terms  [1, 5]
+  fallback rate  27.0%
+  sign consist.  mean=0.965 std=0.083
+  consistency J  mean=1.0000 std=0.0000  exact_match_rate=100.0%
+  bias audit gap on CODE_GENDER: 0.2381 (100% presence)  visible-rule presence: 46.0%
+  recourse achieved: 100.0% of non-favourable instances
+
+=== hmeq ===
+  fidelity R^2   mean=0.761 median=0.779 std=0.089 [0.411, 0.920]  (n=300)
+  complexity SC  mean=0.479 median=0.510 std=0.064 [0.180, 0.544]
+  coverage       mean=0.976 median=0.977 std=0.014
+  rule length    mean=4.52 terms  [1, 5]
+  fallback rate  38.0%
+  sign consist.  mean=0.977 std=0.069
+  consistency J  mean=1.0000 std=0.0000  exact_match_rate=100.0%
+  recourse achieved: 98.3% of non-favourable instances
+
+=== hmda_vt ===
+  fidelity R^2   mean=0.794 median=0.812 std=0.092 [0.325, 0.954]  (n=300)
+  complexity SC  mean=0.511 median=0.525 std=0.089 [0.220, 0.664]
+  coverage       mean=0.972 median=0.974 std=0.011
+  rule length    mean=3.56 terms  [1, 5]
+  fallback rate  27.0%
+  sign consist.  mean=0.968 std=0.089
+  consistency J  mean=1.0000 std=0.0000  exact_match_rate=100.0%
+  bias audit gap on derived_sex: 0.1723 (100% presence)  visible-rule presence: 3.3%
+  recourse achieved: 96.7% of non-favourable instances
+
+=== hmda_nh ===
+  fidelity R^2   mean=0.779 median=0.807 std=0.110 [0.245, 0.949]  (n=300)
+  complexity SC  mean=0.479 median=0.480 std=0.095 [0.220, 0.654]
+  coverage       mean=0.965 median=0.966 std=0.013
+  rule length    mean=3.06 terms  [1, 5]
+  fallback rate  31.3%
+  sign consist.  mean=0.972 std=0.083
+  consistency J  mean=1.0000 std=0.0000  exact_match_rate=100.0%
+  bias audit gap on derived_sex: 0.2541 (100% presence)  visible-rule presence: 4.7%
+  recourse achieved: 95.7% of non-favourable instances
+
+Saved to C:\Users\samla\Documents\Samrat Lamsal\research\results\model_profile.json

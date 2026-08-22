@@ -48,11 +48,13 @@ IMMUTABLE = {
     "home_credit": {"CODE_GENDER", "DAYS_BIRTH"},
     "hmeq": set(),
     "hmda_vt": {"derived_sex", "derived_race", "derived_ethnicity", "applicant_age"},
+    "hmda_nh": {"derived_sex", "derived_race", "derived_ethnicity", "applicant_age"},
 }
 ACTIONABLE = {
     "home_credit": {"AMT_CREDIT", "AMT_ANNUITY", "AMT_INCOME_TOTAL"},
     "hmeq": {"LOAN", "DEBTINC", "CLNO", "DELINQ"},
     "hmda_vt": {"loan_amount", "debt_to_income_ratio"},
+    "hmda_nh": {"loan_amount", "debt_to_income_ratio"},
 }
 
 
